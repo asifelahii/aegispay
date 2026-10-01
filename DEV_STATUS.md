@@ -68,6 +68,8 @@ threshold policy. Current evidence does not prove the full hypothesis.
   candidate comparison.
 - EXP-01 seed and review-capacity robustness validation infrastructure and
   reproducible management command.
+- EXP-02 scenario-mixture sensitivity infrastructure and controlled stress-test
+  results.
 
 ## Current Experiment State
 
@@ -151,15 +153,101 @@ prevalence. This is not scenario-mixture sensitivity, realistic prevalence
 validation, production performance validation, or causal intervention evidence.
 The candidate remains **experimental / not promoted**.
 
+## EXP-02 Scenario-Mixture Sensitivity
+
+The five profiles below are synthetic stress assumptions for controlled
+benchmark construction. Their weights are not estimates of real upay fraud
+prevalence or production transaction distributions.
+
+| Profile | Weights by family |
+|---|---|
+| `EQUAL_FAMILY` | All eight families weight 1 |
+| `LEGITIMATE_DOMINANT` | LEGITIMATE 14; LEGITIMATE_UNUSUAL 3; LEGITIMATE_NETWORK_HUB 3; each scam family 1 |
+| `HARD_NEGATIVE_DOMINANT` | LEGITIMATE 4; LEGITIMATE_UNUSUAL 8; LEGITIMATE_NETWORK_HUB 8; each scam family 1 |
+| `SOCIAL_ENGINEERING_HEAVY` | LEGITIMATE 4; LEGITIMATE_UNUSUAL 2; LEGITIMATE_NETWORK_HUB 2; ACCOUNT_TAKEOVER 1; IMPERSONATION 5; ADVANCE_FEE 5; MULE_RECIPIENT 1; RAPID_CASHOUT 1 |
+| `NETWORK_ABUSE_HEAVY` | LEGITIMATE 4; LEGITIMATE_UNUSUAL 2; LEGITIMATE_NETWORK_HUB 2; ACCOUNT_TAKEOVER 1; IMPERSONATION 1; ADVANCE_FEE 1; MULE_RECIPIENT 5; RAPID_CASHOUT 5 |
+
+- Seeds: `7, 21, 42, 84, 126`.
+- Review capacities: `5, 20`.
+- Scenario count: `600` per cell.
+- Controlled cells: **50** profile/seed/capacity cells.
+- Strategy-level runs: **100**.
+- Population construction uses deterministic largest-remainder integer quotas.
+- Each strategy in a cell uses the same scenario fingerprint and family counts.
+- Standard deviations are population standard deviations across five seeds.
+
+All deltas use **candidate minus legacy**. Negative probe-rate, residual-loss,
+friction, or modeled-cost deltas favor lower candidate burden or harm; positive
+prevention and review-allocation deltas mean higher candidate values.
+
+### EXP-02 aggregate metrics
+
+| Profile | Capacity | Strategy | Mean probe | Probe SD | Mean prevention | Prevention SD | Mean residual loss | Mean legitimate friction | Mean reviews | Mean total cost | Cost SD |
+|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| EQUAL_FAMILY | 5 | Legacy | 87.50% | 0.0000 | 30.64% | 0.0030 | 713520.35 | 28796.00 | 1.60 | 769458.35 | 15951.6506 |
+| EQUAL_FAMILY | 5 | Candidate | 57.20% | 0.0177 | 36.48% | 0.0033 | 653497.47 | 26941.00 | 5.00 | 719718.47 | 15327.5363 |
+| EQUAL_FAMILY | 20 | Legacy | 87.50% | 0.0000 | 30.64% | 0.0030 | 713520.35 | 28796.00 | 1.60 | 769458.35 | 15951.6506 |
+| EQUAL_FAMILY | 20 | Candidate | 57.20% | 0.0177 | 36.97% | 0.0053 | 648424.40 | 26941.00 | 9.40 | 718905.40 | 15683.2020 |
+| HARD_NEGATIVE_DOMINANT | 5 | Legacy | 84.00% | 0.0000 | 30.37% | 0.0052 | 228202.12 | 72944.00 | 0.20 | 321876.12 | 10012.2349 |
+| HARD_NEGATIVE_DOMINANT | 5 | Candidate | 48.03% | 0.0188 | 36.27% | 0.0046 | 208888.06 | 68354.00 | 1.60 | 302222.06 | 9771.3679 |
+| HARD_NEGATIVE_DOMINANT | 20 | Legacy | 84.00% | 0.0000 | 30.37% | 0.0052 | 228202.12 | 72944.00 | 0.20 | 321876.12 | 10012.2349 |
+| HARD_NEGATIVE_DOMINANT | 20 | Candidate | 48.03% | 0.0188 | 36.27% | 0.0046 | 208888.06 | 68354.00 | 1.60 | 302222.06 | 9771.3679 |
+| LEGITIMATE_DOMINANT | 5 | Legacy | 44.00% | 0.0000 | 30.37% | 0.0052 | 228202.12 | 27848.00 | 0.20 | 267996.12 | 9523.2260 |
+| LEGITIMATE_DOMINANT | 5 | Candidate | 26.40% | 0.0110 | 36.27% | 0.0046 | 208888.06 | 26013.00 | 1.60 | 251097.06 | 9435.5896 |
+| LEGITIMATE_DOMINANT | 20 | Legacy | 44.00% | 0.0000 | 30.37% | 0.0052 | 228202.12 | 27848.00 | 0.20 | 267996.12 | 9523.2260 |
+| LEGITIMATE_DOMINANT | 20 | Candidate | 26.40% | 0.0110 | 36.27% | 0.0046 | 208888.06 | 26013.00 | 1.60 | 251097.06 | 9435.5896 |
+| NETWORK_ABUSE_HEAVY | 5 | Legacy | 81.00% | 0.0000 | 30.18% | 0.0054 | 711516.65 | 21886.00 | 0.60 | 757360.65 | 18591.4876 |
+| NETWORK_ABUSE_HEAVY | 5 | Candidate | 57.90% | 0.0127 | 38.32% | 0.0045 | 628513.38 | 20456.00 | 5.00 | 691743.38 | 15895.4856 |
+| NETWORK_ABUSE_HEAVY | 20 | Legacy | 81.00% | 0.0000 | 30.18% | 0.0054 | 711516.65 | 21886.00 | 0.60 | 757360.65 | 18591.4876 |
+| NETWORK_ABUSE_HEAVY | 20 | Candidate | 57.90% | 0.0127 | 39.29% | 0.0051 | 618582.28 | 20456.00 | 14.00 | 690482.28 | 15739.7457 |
+| SOCIAL_ENGINEERING_HEAVY | 5 | Legacy | 81.00% | 0.0000 | 27.90% | 0.0050 | 734675.96 | 21886.00 | 0.60 | 778267.96 | 17743.1899 |
+| SOCIAL_ENGINEERING_HEAVY | 5 | Candidate | 46.57% | 0.0270 | 32.53% | 0.0052 | 687505.69 | 20456.00 | 2.40 | 737057.69 | 16509.4158 |
+| SOCIAL_ENGINEERING_HEAVY | 20 | Legacy | 81.00% | 0.0000 | 27.90% | 0.0050 | 734675.96 | 21886.00 | 0.60 | 778267.96 | 17743.1899 |
+| SOCIAL_ENGINEERING_HEAVY | 20 | Candidate | 46.57% | 0.0270 | 32.53% | 0.0052 | 687505.69 | 20456.00 | 2.40 | 737057.69 | 16509.4158 |
+
+### EXP-02 profile summaries
+
+Each profile contains 10 cells: five seeds at each of two capacities.
+
+| Profile | Fewer probes | Prevention better/equal/worse | Friction lower/equal/higher | Cost lower/equal/higher | Prevention delta min/max | Cost delta min/max | Mean review delta |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| EQUAL_FAMILY | 10/10 | 10/0/0 | 10/0/0 | 10/0/0 | +0.0558/+0.0682 | -55232.00/-47060.05 | +5.60 |
+| HARD_NEGATIVE_DOMINANT | 10/10 | 10/0/0 | 10/0/0 | 10/0/0 | +0.0568/+0.0632 | -20539.20/-17706.85 | +1.40 |
+| LEGITIMATE_DOMINANT | 10/10 | 10/0/0 | 10/0/0 | 10/0/0 | +0.0568/+0.0632 | -18064.30/-14781.85 | +1.40 |
+| NETWORK_ABUSE_HEAVY | 10/10 | 10/0/0 | 10/0/0 | 10/0/0 | +0.0758/+0.0927 | -72816.50/-57725.25 | +8.90 |
+| SOCIAL_ENGINEERING_HEAVY | 10/10 | 10/0/0 | 10/0/0 | 10/0/0 | +0.0441/+0.0486 | -43035.25/-38239.20 | +1.80 |
+
+### EXP-02 global summary
+
+- Candidate fewer probes: **50/50**.
+- Prevention better/equal/worse: **50/0/0**.
+- Legitimate friction lower/equal/higher: **50/0/0**.
+- Modeled cost lower/equal/higher: **50/0/0**.
+- Worst/best prevention delta: **+0.0441 / +0.0927**.
+- Worst/best modeled-cost delta: **-14781.85 / -72816.50**.
+- Largest positive review-allocation delta: **+16**.
+
+The candidate remained **experimental / not promoted**. Review demand was
+profile-sensitive, highest under `NETWORK_ABUSE_HEAVY`, where the mean review
+allocation delta was `+8.90`. `HARD_NEGATIVE_DOMINANT` and
+`LEGITIMATE_DOMINANT` had the lowest mean review delta at `+1.40`.
+
+These are synthetic scenario-mixture stress tests. The configured profile
+weights are experimental benchmark assumptions and are not estimates of real
+upay fraud prevalence or production transaction distributions.
+
 ## Current Interpretation
 
 The legacy Context Probe is not uniformly efficient: it frequently asks a
 question without changing the requested action. The decision-relevant
 candidate reduced probes and improved prevention, legitimate friction, and
 modeled cost in every EXP-01 cell. This supports stability across the tested
-seed and review-capacity grid under the current synthetic assumptions. It does
-not establish robustness to scenario-mixture changes or production conditions,
-and does not promote the candidate.
+seed and review-capacity grid under the current synthetic assumptions. EXP-02
+also observed those directional differences in every tested synthetic mixture
+stress cell, including hard-negative, legitimate-dominant, social-engineering,
+and network-abuse-heavy profiles. Review demand increased for the candidate,
+especially in the network-abuse-heavy profile. These observations do not
+promote the candidate or establish production performance.
 
 ## Current Active Candidate
 
@@ -171,9 +259,8 @@ synthetic context, or evaluation labels.
 
 ## Current Research Question
 
-Does the candidate remain beneficial under controlled scenario-mixture
-sensitivity, without relying on the deterministic round-robin mixture used by
-the current synthetic generator?
+How sensitive are the observed candidate-versus-legacy differences to the
+prototype Context Probe friction and intervention-cost assumptions?
 
 ## Locked Constraints
 
@@ -196,15 +283,16 @@ the current synthetic generator?
 - The candidate has been evaluated only on limited configurations.
 - EXP-01 varies seeds and review capacity but not the scenario-family mixture;
   its round-robin mixture remains fixed.
+- EXP-02 varies scenario-mixture weights but does not test friction-cost or
+  intervention-cost sensitivity.
 - No actual production upay data is integrated.
 - No production causal intervention effects are measured.
 
 ## Next Planned Work
 
-Run controlled scenario-mixture sensitivity before any candidate promotion.
-Keep the same prevention, friction, review-demand, and modeled-cost reporting
-used by EXP-01. Further sensitivity work should separately test Context Probe
-friction and intervention-cost assumptions.
+Run controlled Context Probe friction-cost and intervention-cost sensitivity
+before any candidate promotion. Keep the same prevention, friction,
+review-demand, and modeled-cost reporting used by EXP-01 and EXP-02.
 
 ## Future Backlog
 
@@ -224,6 +312,6 @@ Before modifying code, read this file, `.github/copilot-instructions.md`, the
 current README, the latest relevant tests, and the service/management command
 for the requested area. Inspect current Git status and preserve the untracked
 `artifacts/` directory. Do not promote the candidate automatically. The next
-research task should address controlled scenario-mixture sensitivity, keeping
-ground truth evaluation-only and reporting prevention, friction, review demand,
-and modeled cost together.
+research task should address friction-cost and intervention-cost sensitivity,
+keeping ground truth evaluation-only and reporting prevention, friction, review
+demand, and modeled cost together.
