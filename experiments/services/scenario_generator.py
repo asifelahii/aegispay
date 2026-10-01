@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from enum import StrEnum
@@ -19,6 +19,9 @@ class ScenarioType(StrEnum):
     ADVANCE_FEE = "ADVANCE_FEE"
     MULE_RECIPIENT = "MULE_RECIPIENT"
     RAPID_CASHOUT = "RAPID_CASHOUT"
+
+    LEGITIMATE_UNUSUAL = "LEGITIMATE_UNUSUAL"
+    LEGITIMATE_NETWORK_HUB = "LEGITIMATE_NETWORK_HUB"
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +45,14 @@ class SyntheticScenarioGenerator:
     evaluation. They are not claimed to represent real upay fraud
     prevalence or production distributions.
     """
+
+    SCAM_TYPES = frozenset({
+        ScenarioType.ACCOUNT_TAKEOVER,
+        ScenarioType.IMPERSONATION,
+        ScenarioType.ADVANCE_FEE,
+        ScenarioType.MULE_RECIPIENT,
+        ScenarioType.RAPID_CASHOUT,
+    })
 
     def __init__(
         self,
@@ -122,7 +133,7 @@ class SyntheticScenarioGenerator:
 
         is_scam = (
             scenario_type
-            != ScenarioType.LEGITIMATE
+            in self.SCAM_TYPES
         )
 
         if (
@@ -202,6 +213,50 @@ class SyntheticScenarioGenerator:
                 asked_to_keep_secret=True,
             )
 
+        elif (
+            scenario_type
+            == ScenarioType.LEGITIMATE_UNUSUAL
+        ):
+            transaction = self._replace_transaction(
+                transaction,
+                is_new_recipient=True,
+                amount_vs_sender_mean=2.6,
+                amount_vs_sender_p95=1.30,
+            )
+
+            context = ScamContext(
+                phone_call=False,
+                unknown_contact=False,
+                urgency=False,
+                reward_or_prize=False,
+                support_impersonation=False,
+                asked_to_keep_secret=False,
+            )
+
+        elif (
+            scenario_type
+            == ScenarioType.LEGITIMATE_NETWORK_HUB
+        ):
+            transaction = self._replace_transaction(
+                transaction,
+                transaction_type=(
+                    TransactionType.MERCHANT_PAYMENT
+                ),
+                recipient_unique_senders_24h=12,
+                recipient_fan_in_24h=14,
+                recipient_fan_out_24h=6,
+                recipient_pass_through_ratio=0.82,
+            )
+
+            context = ScamContext(
+                phone_call=False,
+                unknown_contact=False,
+                urgency=False,
+                reward_or_prize=False,
+                support_impersonation=False,
+                asked_to_keep_secret=False,
+            )
+
         return GeneratedScenario(
             scenario_type=scenario_type,
             transaction=transaction,
@@ -221,8 +276,6 @@ class SyntheticScenarioGenerator:
         transaction: NormalizedTransaction,
         **changes,
     ) -> NormalizedTransaction:
-        from dataclasses import replace
-
         return replace(
             transaction,
             **changes,

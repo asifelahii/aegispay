@@ -2,10 +2,16 @@ from datetime import UTC, datetime
 
 from django.test import SimpleTestCase
 
-from core.contracts import TransactionGroundTruth
 from experiments.services.scenario_generator import (
     ScenarioType,
     SyntheticScenarioGenerator,
+)
+from core.contracts import (
+    RiskBand,
+    TransactionGroundTruth,
+)
+from risk.services.rules import (
+    RulesRiskEngine,
 )
 
 
@@ -224,4 +230,173 @@ class SyntheticScenarioGeneratorTests(
         with self.assertRaises(ValueError):
             generator.generate(
                 count=-1
+            )
+
+    def test_unusual_legitimate_scenario_is_not_scam(
+        self,
+    ):
+        scenarios = SyntheticScenarioGenerator(
+            seed=42
+        ).generate(
+            count=7,
+            start_time=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=UTC,
+            ),
+        )
+
+        scenario = scenarios[6]
+
+        self.assertEqual(
+            scenario.scenario_type,
+            ScenarioType.LEGITIMATE_UNUSUAL,
+        )
+
+        self.assertFalse(
+            scenario.ground_truth.is_scam,
+        )
+
+        self.assertTrue(
+            scenario.transaction.is_new_recipient
+        )
+
+        self.assertGreater(
+            scenario.transaction.amount_vs_sender_mean,
+            2.0,
+        )
+    
+
+    def test_legitimate_network_hub_is_not_scam(
+        self,
+    ):
+        scenarios = SyntheticScenarioGenerator(
+            seed=42
+        ).generate(
+            count=8,
+            start_time=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=UTC,
+            ),
+        )
+
+        scenario = scenarios[7]
+
+        self.assertEqual(
+            scenario.scenario_type,
+            ScenarioType.LEGITIMATE_NETWORK_HUB,
+        )
+
+        self.assertFalse(
+            scenario.ground_truth.is_scam,
+        )
+
+        self.assertGreaterEqual(
+            scenario.transaction.recipient_unique_senders_24h,
+            10,
+        )
+
+    def test_hard_negative_legitimate_scenarios_can_look_risky(
+        self,
+    ):
+        scenarios = SyntheticScenarioGenerator(
+            seed=42
+        ).generate(
+            count=8,
+            start_time=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=UTC,
+            ),
+        )
+
+        engine = RulesRiskEngine()
+
+        unusual = engine.assess(
+            scenarios[6].transaction
+        )
+
+        network_hub = engine.assess(
+            scenarios[7].transaction
+        )
+
+        self.assertGreaterEqual(
+            unusual.score,
+            0.25,
+        )
+
+        self.assertGreaterEqual(
+            network_hub.score,
+            0.25,
+        )
+
+        self.assertNotEqual(
+            unusual.band,
+            RiskBand.LOW,
+        )
+
+        self.assertNotEqual(
+            network_hub.band,
+            RiskBand.LOW,
+        )
+
+    def test_first_eight_scenarios_include_three_legitimate_families(
+        self,
+    ):
+        scenarios = SyntheticScenarioGenerator(
+            seed=42
+        ).generate(
+            count=8,
+            start_time=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=UTC,
+            ),
+        )
+
+        legitimate_types = {
+            scenario.scenario_type
+            for scenario in scenarios
+            if not scenario.ground_truth.is_scam
+        }
+
+        self.assertEqual(
+            legitimate_types,
+            {
+                ScenarioType.LEGITIMATE,
+                ScenarioType.LEGITIMATE_UNUSUAL,
+                ScenarioType.LEGITIMATE_NETWORK_HUB,
+            },
+        )
+
+
+    def test_all_declared_scam_types_are_labeled_scam(
+        self,
+    ):
+        scenarios = SyntheticScenarioGenerator(
+            seed=42
+        ).generate(
+            count=8,
+            start_time=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=UTC,
+            ),
+        )
+
+        for scenario in scenarios:
+            expected = (
+                scenario.scenario_type
+                in SyntheticScenarioGenerator.SCAM_TYPES
+            )
+
+            self.assertEqual(
+                scenario.ground_truth.is_scam,
+                expected,
             )
