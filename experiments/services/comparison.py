@@ -4,6 +4,9 @@ from experiments.services.baselines import (
     BaselineExperimentRunner,
     BaselineStrategy,
 )
+from experiments.services.friction import (
+    CustomerFrictionAccounting,
+)
 from experiments.services.runner import (
     AegisPayExperimentRunner,
     ExperimentResult,
@@ -33,6 +36,9 @@ class StrategyMetrics:
     prevention_rate: float
 
     legitimate_friction_cost: float
+    legitimate_context_probe_friction_cost: float
+    legitimate_total_customer_friction_cost: float
+
     operations_cost: float
 
     total_modeled_cost: float
@@ -60,6 +66,11 @@ class PolicyComparisonService:
 
     Ground-truth labels therefore remain evaluation metadata rather
     than runtime decision inputs.
+
+    Customer friction is decomposed into:
+    1. intervention friction
+    2. Context Probe friction
+    3. total customer friction
     """
 
     AEGISPAY = "AEGISPAY"
@@ -68,6 +79,7 @@ class PolicyComparisonService:
         self,
         baseline_runner=None,
         aegispay_runner=None,
+        friction_accounting=None,
     ):
         self.baseline_runner = (
             baseline_runner
@@ -77,6 +89,11 @@ class PolicyComparisonService:
         self.aegispay_runner = (
             aegispay_runner
             or AegisPayExperimentRunner()
+        )
+
+        self.friction_accounting = (
+            friction_accounting
+            or CustomerFrictionAccounting()
         )
 
     def compare(
@@ -131,13 +148,19 @@ class PolicyComparisonService:
             strategies=tuple(results),
         )
 
-    @staticmethod
     def _metrics(
+        self,
         *,
         strategy: str,
         result: ExperimentResult,
     ) -> StrategyMetrics:
         summary = result.summary
+
+        friction = (
+            self.friction_accounting.calculate(
+                result
+            )
+        )
 
         if summary.total_scam_value > 0:
             prevention_rate = (
@@ -157,7 +180,7 @@ class PolicyComparisonService:
 
         if summary.legitimate_scenarios > 0:
             friction_per_legitimate = (
-                summary.legitimate_friction_cost
+                friction.legitimate_total_customer_friction_cost
                 / summary.legitimate_scenarios
             )
         else:
@@ -165,7 +188,7 @@ class PolicyComparisonService:
 
         total_modeled_cost = (
             summary.residual_scam_loss
-            + summary.legitimate_friction_cost
+            + friction.legitimate_total_customer_friction_cost
             + summary.operations_cost
         )
 
@@ -203,7 +226,13 @@ class PolicyComparisonService:
                 4,
             ),
             legitimate_friction_cost=(
-                summary.legitimate_friction_cost
+                friction.legitimate_intervention_friction_cost
+            ),
+            legitimate_context_probe_friction_cost=(
+                friction.legitimate_context_probe_friction_cost
+            ),
+            legitimate_total_customer_friction_cost=(
+                friction.legitimate_total_customer_friction_cost
             ),
             operations_cost=(
                 summary.operations_cost

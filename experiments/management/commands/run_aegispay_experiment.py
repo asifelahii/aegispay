@@ -72,9 +72,11 @@ class Command(BaseCommand):
     ):
         count = options["count"]
         seed = options["seed"]
+
         review_capacity = (
             options["review_capacity"]
         )
+
         output = options["output"]
 
         if count <= 0:
@@ -96,8 +98,10 @@ class Command(BaseCommand):
             tzinfo=UTC,
         )
 
-        generator = SyntheticScenarioGenerator(
-            seed=seed
+        generator = (
+            SyntheticScenarioGenerator(
+                seed=seed
+            )
         )
 
         scenarios = generator.generate(
@@ -124,7 +128,9 @@ class Command(BaseCommand):
         )
 
         if output:
-            output_path = Path(output)
+            output_path = Path(
+                output
+            )
 
             output_path.parent.mkdir(
                 parents=True,
@@ -174,6 +180,12 @@ class Command(BaseCommand):
                 "start_time": (
                     start_time.isoformat()
                 ),
+                "friction_assumptions": {
+                    "context_probe_cost": 25.0,
+                    "status": (
+                        "prototype_simulation_assumption"
+                    ),
+                },
             },
             "strategies": [
                 {
@@ -213,6 +225,12 @@ class Command(BaseCommand):
                     "legitimate_friction_cost": (
                         metrics.legitimate_friction_cost
                     ),
+                    "legitimate_context_probe_friction_cost": (
+                        metrics.legitimate_context_probe_friction_cost
+                    ),
+                    "legitimate_total_customer_friction_cost": (
+                        metrics.legitimate_total_customer_friction_cost
+                    ),
                     "operations_cost": (
                         metrics.operations_cost
                     ),
@@ -235,9 +253,12 @@ class Command(BaseCommand):
         self,
         payload,
     ):
-        experiment = payload["experiment"]
+        experiment = (
+            payload["experiment"]
+        )
 
         self.stdout.write("")
+
         self.stdout.write(
             self.style.SUCCESS(
                 "AegisPay Policy Comparison"
@@ -265,7 +286,9 @@ class Command(BaseCommand):
             f"{'Strategy':<20}"
             f"{'Prevent %':>12}"
             f"{'Residual':>14}"
-            f"{'Legit Fric.':>14}"
+            f"{'Interv Fric.':>14}"
+            f"{'Probe Fric.':>13}"
+            f"{'Total Fric.':>13}"
             f"{'Reviews':>10}"
             f"{'Total Cost':>14}"
         )
@@ -278,19 +301,25 @@ class Command(BaseCommand):
             "-" * len(header)
         )
 
-        for metrics in payload["strategies"]:
+        for metrics in payload[
+            "strategies"
+        ]:
             self.stdout.write(
                 f"{metrics['strategy']:<20}"
                 f"{metrics['prevention_rate'] * 100:>11.2f}%"
                 f"{metrics['residual_scam_loss']:>14.2f}"
                 f"{metrics['legitimate_friction_cost']:>14.2f}"
+                f"{metrics['legitimate_context_probe_friction_cost']:>13.2f}"
+                f"{metrics['legitimate_total_customer_friction_cost']:>13.2f}"
                 f"{metrics['allocated_reviews']:>10}"
                 f"{metrics['total_modeled_cost']:>14.2f}"
             )
 
         self.stdout.write("")
+
         self.stdout.write(
-            "Important: all monetary intervention-effect and "
-            "friction values are prototype simulation assumptions, "
-            "not measured upay production outcomes."
+            "Important: intervention-effect, intervention-friction, "
+            "and Context Probe friction values are prototype "
+            "simulation assumptions, not measured upay production "
+            "outcomes."
         )

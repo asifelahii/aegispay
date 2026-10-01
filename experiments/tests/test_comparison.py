@@ -168,7 +168,7 @@ class PolicyComparisonServiceTests(
             expected = round(
                 (
                     metrics.residual_scam_loss
-                    + metrics.legitimate_friction_cost
+                    + metrics.legitimate_total_customer_friction_cost
                     + metrics.operations_cost
                 ),
                 2,
@@ -178,6 +178,70 @@ class PolicyComparisonServiceTests(
                 metrics.total_modeled_cost,
                 expected,
             )
+
+    def test_baselines_have_zero_context_probe_friction(
+        self,
+    ):
+        result = self.service.compare(
+            self.scenarios,
+            review_capacity=3,
+        )
+
+        metrics = self.metrics_by_strategy(
+            result
+        )
+
+        for strategy in (
+            BaselineStrategy.NO_INTERVENTION.value,
+            BaselineStrategy.HARD_THRESHOLD.value,
+            BaselineStrategy.STATIC_TIER.value,
+        ):
+            self.assertEqual(
+                metrics[
+                    strategy
+                ].legitimate_context_probe_friction_cost,
+                0.0,
+            )
+
+    def test_aegispay_includes_context_probe_friction(
+        self,
+    ):
+        result = self.service.compare(
+            self.scenarios,
+            review_capacity=3,
+        )
+
+        metrics = self.metrics_by_strategy(
+            result
+        )["AEGISPAY"]
+
+        self.assertGreater(
+            metrics.legitimate_context_probe_friction_cost,
+            0,
+        )
+
+    def test_customer_friction_is_decomposed(
+        self,
+    ):
+        result = self.service.compare(
+            self.scenarios,
+            review_capacity=3,
+        )
+
+        metrics = self.metrics_by_strategy(
+            result
+        )["AEGISPAY"]
+
+        self.assertEqual(
+            metrics.legitimate_total_customer_friction_cost,
+            round(
+                (
+                    metrics.legitimate_friction_cost
+                    + metrics.legitimate_context_probe_friction_cost
+                ),
+                2,
+            ),
+        )
 
     def test_prevention_rate_is_bounded(self):
         result = self.service.compare(
