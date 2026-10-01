@@ -82,6 +82,40 @@ class ProbeSelectivityComparisonService:
                 "Review capacity cannot be negative."
             )
 
+        results = self.run_results(
+            scenarios,
+            review_capacity=review_capacity,
+        )
+
+        return ProbeSelectivityResult(
+            review_capacity=(
+                review_capacity
+            ),
+            strategies=(
+                self._metrics(
+                    strategy=self.LEGACY,
+                    result=results[0],
+                ),
+                self._metrics(
+                    strategy=self.CANDIDATE,
+                    result=results[1],
+                ),
+            ),
+        )
+
+    def run_results(
+        self,
+        scenarios: list[
+            GeneratedScenario
+        ],
+        *,
+        review_capacity: int,
+    ) -> tuple[ExperimentResult, ExperimentResult]:
+        if review_capacity < 0:
+            raise ValueError(
+                "Review capacity cannot be negative."
+            )
+
         legacy_runner = (
             AegisPayExperimentRunner(
                 decision_service=(
@@ -116,20 +150,9 @@ class ProbeSelectivityComparisonService:
             review_capacity=review_capacity,
         )
 
-        return ProbeSelectivityResult(
-            review_capacity=(
-                review_capacity
-            ),
-            strategies=(
-                self._metrics(
-                    strategy=self.LEGACY,
-                    result=legacy,
-                ),
-                self._metrics(
-                    strategy=self.CANDIDATE,
-                    result=candidate,
-                ),
-            ),
+        return (
+            legacy,
+            candidate,
         )
 
     def _metrics(

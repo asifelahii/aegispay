@@ -236,6 +236,118 @@ These are synthetic scenario-mixture stress tests. The configured profile
 weights are experimental benchmark assumptions and are not estimates of real
 upay fraud prevalence or production transaction distributions.
 
+## EXP-03A Context Probe Friction-Cost Sensitivity
+
+EXP-03A isolates the Context Probe friction-cost accounting assumption. Probe
+cost is not a runtime input to risk scoring, Context Probe selection,
+intervention selection, or review allocation.
+
+- Profiles: `EQUAL_FAMILY`, `LEGITIMATE_DOMINANT`,
+  `HARD_NEGATIVE_DOMINANT`, `SOCIAL_ENGINEERING_HEAVY`,
+  `NETWORK_ABUSE_HEAVY`.
+- Seeds: `7, 21, 42, 84, 126`.
+- Review capacities: `5, 20`.
+- Count: `600` per base cell.
+- Probe-cost assumptions: `0, 10, 25, 50, 100, 200`.
+- Base runtime cells: **50**.
+- Runtime executions: **100** strategy-level executions.
+- Assumption-evaluation cells: **300**.
+- Evaluated metric rows: **600**.
+- Runtime outcomes were reused; only friction accounting and total modeled
+  cost were recomputed per probe-cost assumption.
+- All values are modeled prototype sensitivity assumptions, not measured
+  customer-friction estimates or production economics.
+
+All deltas use **candidate minus legacy**. Negative friction or modeled-cost
+deltas favor the candidate; positive prevention or review deltas mean higher
+candidate values.
+
+### EXP-03A invariance validation
+
+Across every fixed profile, seed, capacity, and strategy, changing probe cost
+left the following unchanged: context probes, probe rate, prevention rate,
+prevented scam value, residual scam loss, requested reviews, allocated reviews,
+operations cost, and legitimate intervention friction. The experiment reported
+no invariant violations.
+
+### EXP-03A global aggregates by probe cost
+
+| Probe cost | Strategy | Mean intervention friction | Mean probe friction | Mean total friction | Mean total modeled cost | Total-cost SD | Mean prevention |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| 0 | Legacy | 30142.00 | 0.00 | 30142.00 | 574461.84 | 234675.9989 | 29.89% |
+| 0 | Candidate | 30142.00 | 0.00 | 30142.00 | 537858.32 | 217495.6638 | 36.12% |
+| 10 | Legacy | 30142.00 | 1812.00 | 31954.00 | 576273.84 | 234053.5106 | 29.89% |
+| 10 | Candidate | 30142.00 | 920.80 | 31062.80 | 538779.12 | 217172.3872 | 36.12% |
+| 25 | Legacy | 30142.00 | 4530.00 | 34672.00 | 578991.84 | 233125.1094 | 29.89% |
+| 25 | Candidate | 30142.00 | 2302.00 | 32444.00 | 540160.32 | 216689.1803 | 36.12% |
+| 50 | Legacy | 30142.00 | 9060.00 | 39202.00 | 583521.84 | 231592.1804 | 29.89% |
+| 50 | Candidate | 30142.00 | 4604.00 | 34746.00 | 542462.32 | 215888.4243 | 36.12% |
+| 100 | Legacy | 30142.00 | 18120.00 | 48262.00 | 592581.84 | 228581.6449 | 29.89% |
+| 100 | Candidate | 30142.00 | 9208.00 | 39350.00 | 547066.32 | 214304.3510 | 36.12% |
+| 200 | Legacy | 30142.00 | 36240.00 | 66382.00 | 610701.84 | 222792.2340 | 29.89% |
+| 200 | Candidate | 30142.00 | 18416.00 | 48558.00 | 556274.32 | 211207.7807 | 36.12% |
+
+### EXP-03A candidate-vs-legacy summary by probe cost
+
+Each count is across the 50 profile/seed/capacity base cells.
+
+| Probe cost | Cost lower/equal/higher | Friction lower/equal/higher | Probe friction lower/equal/higher | Mean cost delta | Min/max cost delta | Mean friction delta | Min/max friction delta |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 50/0/0 | 0/50/0 | 0/50/0 | -36603.53 | -71441.50/-13081.85 | 0.00 | 0.00/0.00 |
+| 10 | 50/0/0 | 50/0/0 | 50/0/0 | -37494.72 | -71991.50/-13761.85 | -891.20 | -1960.00/-540.00 |
+| 25 | 50/0/0 | 50/0/0 | 50/0/0 | -38831.53 | -72816.50/-14781.85 | -2228.00 | -4900.00/-1350.00 |
+| 50 | 50/0/0 | 50/0/0 | 50/0/0 | -41059.53 | -74191.50/-16481.85 | -4456.00 | -9800.00/-2700.00 |
+| 100 | 50/0/0 | 50/0/0 | 50/0/0 | -45515.53 | -76941.50/-19881.85 | -8912.00 | -19600.00/-5400.00 |
+| 200 | 50/0/0 | 50/0/0 | 50/0/0 | -54427.53 | -82441.50/-26681.85 | -17824.00 | -39200.00/-10800.00 |
+
+### EXP-03A profile-level sensitivity
+
+Each profile has 10 base cells: five seeds × two capacities.
+
+| Profile | Probe cost | Cost lower/equal/higher | Friction lower/equal/higher | Mean cost delta | Mean friction delta |
+|---|---:|---:|---:|---:|---:|
+| EQUAL_FAMILY | 0 | 10/0/0 | 0/10/0 | -48291.42 | 0.00 |
+| EQUAL_FAMILY | 10 | 10/0/0 | 10/0/0 | -49033.42 | -742.00 |
+| EQUAL_FAMILY | 25 | 10/0/0 | 10/0/0 | -50146.42 | -1855.00 |
+| EQUAL_FAMILY | 50 | 10/0/0 | 10/0/0 | -52001.42 | -3710.00 |
+| EQUAL_FAMILY | 100 | 10/0/0 | 10/0/0 | -55711.42 | -7420.00 |
+| EQUAL_FAMILY | 200 | 10/0/0 | 10/0/0 | -63131.42 | -14840.00 |
+| HARD_NEGATIVE_DOMINANT | 0 | 10/0/0 | 0/10/0 | -15064.06 | 0.00 |
+| HARD_NEGATIVE_DOMINANT | 10 | 10/0/0 | 10/0/0 | -16900.06 | -1836.00 |
+| HARD_NEGATIVE_DOMINANT | 25 | 10/0/0 | 10/0/0 | -19654.06 | -4590.00 |
+| HARD_NEGATIVE_DOMINANT | 50 | 10/0/0 | 10/0/0 | -24244.06 | -9180.00 |
+| HARD_NEGATIVE_DOMINANT | 100 | 10/0/0 | 10/0/0 | -33424.06 | -18360.00 |
+| HARD_NEGATIVE_DOMINANT | 200 | 10/0/0 | 10/0/0 | -51784.06 | -36720.00 |
+| LEGITIMATE_DOMINANT | 0 | 10/0/0 | 0/10/0 | -15064.06 | 0.00 |
+| LEGITIMATE_DOMINANT | 10 | 10/0/0 | 10/0/0 | -15798.06 | -734.00 |
+| LEGITIMATE_DOMINANT | 25 | 10/0/0 | 10/0/0 | -16899.06 | -1835.00 |
+| LEGITIMATE_DOMINANT | 50 | 10/0/0 | 10/0/0 | -18734.06 | -3670.00 |
+| LEGITIMATE_DOMINANT | 100 | 10/0/0 | 10/0/0 | -22404.06 | -7340.00 |
+| LEGITIMATE_DOMINANT | 200 | 10/0/0 | 10/0/0 | -29744.06 | -14680.00 |
+| NETWORK_ABUSE_HEAVY | 0 | 10/0/0 | 0/10/0 | -64817.82 | 0.00 |
+| NETWORK_ABUSE_HEAVY | 10 | 10/0/0 | 10/0/0 | -65389.82 | -572.00 |
+| NETWORK_ABUSE_HEAVY | 25 | 10/0/0 | 10/0/0 | -66247.82 | -1430.00 |
+| NETWORK_ABUSE_HEAVY | 50 | 10/0/0 | 10/0/0 | -67677.82 | -2860.00 |
+| NETWORK_ABUSE_HEAVY | 100 | 10/0/0 | 10/0/0 | -70537.82 | -5720.00 |
+| NETWORK_ABUSE_HEAVY | 200 | 10/0/0 | 10/0/0 | -76257.82 | -11440.00 |
+| SOCIAL_ENGINEERING_HEAVY | 0 | 10/0/0 | 0/10/0 | -39780.27 | 0.00 |
+| SOCIAL_ENGINEERING_HEAVY | 10 | 10/0/0 | 10/0/0 | -40352.27 | -572.00 |
+| SOCIAL_ENGINEERING_HEAVY | 25 | 10/0/0 | 10/0/0 | -41210.27 | -1430.00 |
+| SOCIAL_ENGINEERING_HEAVY | 50 | 10/0/0 | 10/0/0 | -42640.27 | -2860.00 |
+| SOCIAL_ENGINEERING_HEAVY | 100 | 10/0/0 | 10/0/0 | -45500.27 | -5720.00 |
+| SOCIAL_ENGINEERING_HEAVY | 200 | 10/0/0 | 10/0/0 | -51220.27 | -11440.00 |
+
+No candidate total-cost regression occurred at any tested probe-cost value.
+The candidate remained **experimental / not promoted**. At probe cost zero,
+total legitimate friction is equal because only intervention friction remains;
+from any positive tested cost onward, the candidate has lower legitimate probe
+and total friction. The candidate's modeled-cost advantage increases as the
+assumed probe cost increases because it requests fewer legitimate probes.
+
+These are controlled prototype accounting assumptions. They are not actual
+customer-friction estimates, measured upay friction, monetary willingness to
+pay, or production economics.
+
 ## Current Interpretation
 
 The legacy Context Probe is not uniformly efficient: it frequently asks a
@@ -259,8 +371,9 @@ synthetic context, or evaluation labels.
 
 ## Current Research Question
 
-How sensitive are the observed candidate-versus-legacy differences to the
-prototype Context Probe friction and intervention-cost assumptions?
+How sensitive is the candidate-versus-legacy result to the intervention
+protection, friction, and operational-cost assumptions that directly influence
+intervention selection?
 
 ## Locked Constraints
 
@@ -285,14 +398,17 @@ prototype Context Probe friction and intervention-cost assumptions?
   its round-robin mixture remains fixed.
 - EXP-02 varies scenario-mixture weights but does not test friction-cost or
   intervention-cost sensitivity.
+- EXP-03A varies Context Probe accounting cost only; intervention-selection
+  assumptions remain fixed.
 - No actual production upay data is integrated.
 - No production causal intervention effects are measured.
 
 ## Next Planned Work
 
-Run controlled Context Probe friction-cost and intervention-cost sensitivity
-before any candidate promotion. Keep the same prevention, friction,
-review-demand, and modeled-cost reporting used by EXP-01 and EXP-02.
+Run controlled intervention protection-, friction-, and operations-cost
+sensitivity before any candidate promotion. Keep the same prevention,
+friction, review-demand, and modeled-cost reporting used by EXP-01 through
+EXP-03A.
 
 ## Future Backlog
 
@@ -312,6 +428,6 @@ Before modifying code, read this file, `.github/copilot-instructions.md`, the
 current README, the latest relevant tests, and the service/management command
 for the requested area. Inspect current Git status and preserve the untracked
 `artifacts/` directory. Do not promote the candidate automatically. The next
-research task should address friction-cost and intervention-cost sensitivity,
-keeping ground truth evaluation-only and reporting prevention, friction, review
-demand, and modeled cost together.
+research task should address intervention protection-, friction-, and
+operations-cost sensitivity, keeping ground truth evaluation-only and reporting
+prevention, friction, review demand, and modeled cost together.
