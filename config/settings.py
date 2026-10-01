@@ -38,7 +38,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    'transactions',
+    # AegisPay apps
+    "core",
+    "transactions",
+    "risk",
+    "network",
+    "interventions",
+    "experiments",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
