@@ -173,3 +173,60 @@
 .limitations-panel { border-color: rgba(245, 158, 11, .4); }
 @media (max-width: 900px) { .evidence-layer-grid, .profile-grid { grid-template-columns: repeat(2, 1fr); } .range-grid { grid-template-columns: 1fr; } }
 @media (max-width: 620px) { .comparison-row { grid-template-columns: 1.4fr 1fr 1fr; } .comparison-row span:last-child, .comparison-row b:last-child { grid-column: 2 / -1; } .evidence-grid-bottom { grid-template-columns: 1fr; } .evidence-layer-grid, .profile-grid { grid-template-columns: 1fr; } .strategy-headers { grid-template-columns: 1fr; gap: .4rem; } }
+
+/* Executive evidence hierarchy */
+.evidence-header { margin-bottom: 18px; }
+.evidence-nav { margin: 0 0 24px; padding-bottom: 2px; }
+.evidence-nav a { color: var(--color-text-secondary); background: rgba(8,26,48,.35); }
+.evidence-panel { margin-bottom: 24px; padding: 22px; background: rgba(14,34,59,.62); }
+.reference-panel { background: rgba(14,34,59,.78); }
+.evidence-layer-grid { gap: 12px; margin-bottom: 2px; }
+.evidence-layer-card { min-height: 126px; justify-content: space-between; padding: 14px 16px; background: rgba(8,26,48,.48); border-color: rgba(177,214,255,.15); }
+.evidence-layer-card span, .experiment-kicker { color: var(--color-cyan); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.evidence-layer-card strong { font-size: 28px; line-height: 1; letter-spacing: -.05em; }
+.evidence-layer-card small { color: var(--color-text-secondary); font-size: 11px; }
+.evidence-layer-card b { display: inline-flex; align-self: flex-start; padding: 3px 7px; color: var(--color-success); background: rgba(46,216,155,.08); border: 1px solid rgba(46,216,155,.18); border-radius: 999px; font-size: 10px; font-weight: 700; }
+.exp-section { scroll-margin-top: 20px; }
+.experiment-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+.experiment-heading h2 { margin-top: 4px; font-size: 19px; font-weight: 700; }
+.experiment-heading p { max-width: 620px; margin-top: 5px; color: var(--color-text-secondary); font-size: 12px; }
+.experiment-heading .badge { flex: 0 0 auto; margin-top: 2px; }
+.evidence-matrix { min-width: 480px; background: rgba(3,15,29,.26); border: 1px solid rgba(177,214,255,.13); border-radius: var(--radius-md); overflow: hidden; }
+.evidence-matrix th, .evidence-matrix td { height: 38px; padding: 5px 12px; border-bottom: 1px solid rgba(177,214,255,.09); }
+.evidence-matrix thead th { color: var(--color-text-secondary); background: rgba(39,140,255,.08); font-size: 11px; text-align: center; }
+.evidence-matrix thead th:first-child { color: var(--color-text-primary); text-align: left; }
+.evidence-matrix tbody th { color: var(--color-text-primary); background: rgba(8,26,48,.35); font-size: 12px; }
+.evidence-matrix tbody td { background: rgba(46,216,155,.035); }
+.evidence-matrix tbody tr:last-child th, .evidence-matrix tbody tr:last-child td { border-bottom: 0; }
+.evidence-matrix td:has(.matrix-check):hover, .evidence-matrix td:has(.matrix-check):focus-within { background: rgba(46,216,155,.12); }
+.matrix-check { display: inline-grid; width: 22px; height: 22px; place-items: center; color: var(--color-success); background: rgba(46,216,155,.12); border: 1px solid rgba(46,216,155,.28); border-radius: 6px; font-size: 13px; }
+.evidence-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 10px; margin-top: 14px; }
+.evidence-metrics > div { display: flex; flex-direction: column; gap: 4px; padding: 11px 13px; background: rgba(3,15,29,.32); border: 1px solid rgba(177,214,255,.10); border-radius: var(--radius-sm); }
+.evidence-metrics span { color: var(--color-text-secondary); font-size: 11px; }
+.evidence-metrics strong { color: var(--color-text-primary); font-size: 16px; }
+.finding-callout { display: flex; flex-direction: column; gap: 4px; max-width: 760px; margin-top: 14px; padding: 12px 14px; color: var(--color-text-secondary); background: rgba(255,200,87,.055); border-left: 3px solid var(--color-warning); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; line-height: 1.5; }
+.finding-callout strong { color: var(--color-warning); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.finding-callout b { color: var(--color-text-primary); }
+.profile-grid { gap: 10px; }
+.profile-card { min-height: 112px; padding: 12px; background: rgba(3,15,29,.28); border-color: rgba(177,214,255,.12); }
+.profile-card strong { color: var(--color-text-primary); font-size: 12px; }
+.profile-card span { color: var(--color-text-secondary); font-size: 11px; }
+.profile-card b { font-size: 10px; line-height: 1.35; }
+.range-grid { gap: 10px; margin-top: 14px; }
+.range-grid span { padding: 11px 13px; background: rgba(3,15,29,.28); border: 1px solid rgba(177,214,255,.10); border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: 11px; }
+.range-grid strong { font-size: 15px; }
+.chart-wrap { margin: 0 0 12px; padding: 12px 8px 4px; background: rgba(3,15,29,.28); border: 1px solid rgba(177,214,255,.10); border-radius: var(--radius-md); }
+.chart-labels { fill: var(--color-text-secondary); font-size: 12px; }
+.chart-grid-line { stroke: rgba(177,214,255,.16); }
+.evidence-data-table { min-width: 560px; background: rgba(3,15,29,.22); border: 1px solid rgba(177,214,255,.10); border-radius: var(--radius-md); overflow: hidden; }
+.evidence-data-table th { color: var(--color-text-secondary); background: rgba(39,140,255,.06); }
+.evidence-data-table td { color: var(--color-text-primary); }
+.global-summary { max-width: 900px; margin-top: 14px; padding: 13px 15px; }
+.global-summary strong { color: var(--color-cyan); font-size: 12px; }
+.global-summary span { color: var(--color-text-secondary); font-size: 11px; line-height: 1.5; }
+.evidence-grid-bottom { gap: 16px; margin-top: 4px; }
+.support-panel, .limitations-panel { margin-bottom: 0; }
+.support-panel p { max-width: 620px; margin-top: 12px; color: var(--color-text-secondary); font-size: 13px; line-height: 1.6; }
+.limitations-panel { border-color: rgba(255,200,87,.28); background: rgba(14,34,59,.68); }
+@media (max-width: 900px) { .evidence-layer-grid { grid-template-columns: repeat(2, 1fr); } .experiment-heading { flex-direction: column; gap: 10px; } .experiment-heading .badge { align-self: flex-start; } .profile-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px) { .evidence-panel { padding: 16px 14px; margin-bottom: 18px; }.evidence-layer-grid, .profile-grid { grid-template-columns: 1fr; }.evidence-layer-card { min-height: 108px; }.evidence-metrics { grid-template-columns: 1fr; }.experiment-heading h2 { font-size: 17px; }.experiment-heading p { font-size: 11px; }.finding-callout { font-size: 11px; }.chart-wrap { padding-left: 0; padding-right: 0; } }

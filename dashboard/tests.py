@@ -101,7 +101,7 @@ class ExperimentEvidenceTests(SimpleTestCase):
 
     def test_limitation_language_is_prominent(self):
         response = self.get_page()
-        for text in ("What this evidence does not establish", "Not production validation", "Not real customer-response behavior", "No ML model"):
+        for text in ("What this does not establish", "Not production validation", "Not real customer-response behavior", "No ML model"):
                 self.assertContains(response, text)
 
     def test_presenter_is_deterministic_and_does_not_run_experiments(self):
