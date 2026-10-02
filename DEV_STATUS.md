@@ -656,7 +656,39 @@ Current limitations: the page is a curated synthetic evidence snapshot, not a
 live experiment runner or production monitoring surface. Modeled cost units
 are not currency or measured economics.
 
-Next UI task: **UI Phase 6: Final Product Integration, Demo Polish & Submission UX**
+## UI Phase 6: Final Product Integration & Demo Polish
+
+Integrated the completed UI phases into one judge-ready product journey. The
+project root now redirects to the analyst overview, and `/demo/` is a friendly
+alias for the customer payment demonstration. The analyst shell includes a
+single `Run Customer Demo` action, while the sidebar keeps Transactions,
+Review Queue, Reports, and Settings clearly disabled with `Soon` labels.
+
+The overview now explains the AegisPay proposition and provides a compact
+Hackathon Demo Journey linking customer payment, selective context, analyst
+explanation, recipient network, and validation evidence. Cross-page links now
+connect the supported customer result to transaction explanation, transaction
+detail to recipient network and validation evidence, network intelligence back
+to `TX-8420`, and experiment evidence to the customer demo.
+
+Completed a terminology, currency, disclosure, and metadata pass. Customer
+payment amounts use the Bangladesh-facing `৳` convention; synthetic network
+amounts use neutral `value units`; experiment and intervention costs remain
+modeled cost units without currency symbols. Added shared analyst disclosure,
+customer disclosure retention, favicon metadata, page-specific titles, and
+scenario guidance outside the customer payment card.
+
+Added focused root/alias, cross-page, and guided-demo integration coverage.
+Responsive and accessibility polish preserves semantic landmarks, visible
+focus states, keyboard graph interaction, accessible tables/SVG labels, and
+mobile stacking without introducing another visual system.
+
+Current limitations: customer flows remain deterministic prototype
+simulations, analyst navigation still has intentionally disabled future
+sections, and no real payment, authentication, production fraud decision, or
+analyst mutation exists.
+
+Next task: **Final Submission Documentation & Demo Package**
 
 ## Future Backlog
 

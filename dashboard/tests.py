@@ -13,6 +13,14 @@ class DashboardOverviewIntroTests(SimpleTestCase):
     def test_dashboard_url_resolves(self):
         self.assertEqual(reverse("dashboard:overview"), "/dashboard/")
 
+    def test_root_redirects_to_dashboard(self):
+        response = self.client.get(reverse("home"))
+        self.assertRedirects(response, "/dashboard/")
+
+    def test_demo_alias_redirects_to_customer_demo(self):
+        response = self.client.get("/demo/")
+        self.assertRedirects(response, "/dashboard/demo/payment/")
+
     def test_dashboard_returns_http_200(self):
         self.assertEqual(self.get_dashboard().status_code, 200)
 
@@ -29,7 +37,7 @@ class DashboardOverviewIntroTests(SimpleTestCase):
     def test_prototype_and_synthetic_labels_render(self):
         response = self.get_dashboard()
 
-        self.assertContains(response, "Prototype dashboard")
+        self.assertContains(response, "Intent-aware adaptive scam intervention")
         self.assertContains(response, "Synthetic demo data")
 
     def test_all_metric_card_labels_render(self):
@@ -102,6 +110,9 @@ class ExperimentEvidenceTests(SimpleTestCase):
         self.assertEqual(first, second)
         self.assertEqual(first["exp03a"]["probe_costs"], [0, 10, 25, 50, 100, 200])
         self.assertEqual(first["exp03b"]["global_controlled_cells"], 350)
+
+    def test_evidence_links_to_customer_demo(self):
+        self.assertContains(self.get_page(), "See the policy in action")
 
 class DashboardOverviewTests(SimpleTestCase):
     def get_dashboard(self):
@@ -182,6 +193,11 @@ class TransactionDetailTests(SimpleTestCase):
 
     def test_transaction_detail_returns_http_200(self):
         self.assertEqual(self.get_detail().status_code, 200)
+
+    def test_transaction_detail_links_to_evidence_and_network(self):
+        response = self.get_detail()
+        self.assertContains(response, "How was this policy validated?")
+        self.assertContains(response, "Inspect Recipient Network")
 
     def test_transaction_detail_uses_expected_template(self):
         self.assertTemplateUsed(
@@ -349,6 +365,7 @@ class CustomerPaymentDemoTests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Additional review recommended")
         self.assertContains(response, "AegisPay recommends human review")
+        self.assertContains(response, "View Analyst Explanation")
 
     def test_guided_no_recomputes_to_verify_without_fake_risk_reduction(self):
         data = self.payment_data("guided")

@@ -35,7 +35,7 @@ def overview(request):
             },
             {
                 "label": "Simulated Protected Value",
-                "value": "$384K",
+                "value": "৳384K",
                 "supporting": "Modeled synthetic benchmark value",
                 "trend": "+12.6%",
                 "trend_label": "vs. prior demo window",
@@ -56,7 +56,7 @@ def overview(request):
             {
                 "transaction_id": "TX-8420",
                 "time": "10:42:18",
-                "amount": "$1,240.00",
+                "amount": "৳1,240.00",
                 "risk": "Low",
                 "risk_tone": "low",
                 "status": "Cleared",
@@ -65,7 +65,7 @@ def overview(request):
             },
             {
                 "time": "10:39:04",
-                "amount": "$3,850.00",
+                "amount": "৳3,850.00",
                 "risk": "Medium",
                 "risk_tone": "medium",
                 "status": "Monitored",
@@ -74,7 +74,7 @@ def overview(request):
             },
             {
                 "time": "10:34:51",
-                "amount": "$8,420.00",
+                "amount": "৳8,420.00",
                 "risk": "High",
                 "risk_tone": "high",
                 "status": "Protected",
@@ -84,7 +84,7 @@ def overview(request):
             {
                 "transaction_id": "TX-12600",
                 "time": "10:31:27",
-                "amount": "$12,600.00",
+                "amount": "৳12,600.00",
                 "risk": "Critical",
                 "risk_tone": "critical",
                 "status": "In review",
@@ -93,7 +93,7 @@ def overview(request):
             },
             {
                 "time": "10:26:09",
-                "amount": "$6,780.00",
+                "amount": "৳6,780.00",
                 "risk": "High",
                 "risk_tone": "high",
                 "status": "Cooling",
@@ -134,7 +134,7 @@ def transaction_detail(request, transaction_id):
     return render(
         request,
         "dashboard/transaction_detail.html",
-        {"detail": detail},
+        {"detail": detail, "active_section": "overview"},
     )
 
 

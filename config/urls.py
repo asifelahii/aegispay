@@ -16,9 +16,20 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import include, path
 
+
+def home(request):
+    return redirect("dashboard:overview")
+
+
+def demo_alias(request):
+    return redirect("dashboard:payment_demo")
+
 urlpatterns = [
+    path("", home, name="home"),
+    path("demo/", demo_alias, name="demo"),
     path("admin/", admin.site.urls),
     path("dashboard/", include("dashboard.urls")),
 ]

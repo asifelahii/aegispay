@@ -1,4 +1,5 @@
 {% extends "dashboard/customer/base.html" %}
+{% block title %}AegisPay · Payment Decision{% endblock %}
 {% block content %}
 <section class="payment-card result-card" aria-labelledby="intervention-title">
     <div class="result-icon result-{{ decision.action|lower }}" aria-hidden="true">!</div>
@@ -19,6 +20,7 @@
     {% else %}
         <a class="secondary-button" href="{% url 'dashboard:payment_demo' %}">Start another demo</a>
     {% endif %}
+    {% if decision.has_analyst_explanation %}<a class="secondary-button" href="{% url 'dashboard:transaction_detail' decision.transaction_id %}">View Analyst Explanation</a>{% endif %}
     <p class="prototype-note">Prototype simulation only. No payment has been executed.</p>
 </section>
 {% endblock %}

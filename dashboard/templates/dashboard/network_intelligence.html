@@ -23,7 +23,7 @@
     <div class="glass-panel network-kpi"><span>Connected wallets</span><strong>{{ graph.nodes|length }}</strong><small>Nodes in this synthetic view</small></div>
     <div class="glass-panel network-kpi"><span>Inbound relationships</span><strong>{{ metrics.fan_in }}</strong><small>Weighted incoming transactions</small></div>
     <div class="glass-panel network-kpi"><span>Outbound relationships</span><strong>{{ metrics.fan_out }}</strong><small>Weighted outgoing transactions</small></div>
-    <div class="glass-panel network-kpi"><span>24h observed value</span><strong>${{ metrics.observed_value|floatformat:0 }}</strong><small>Incoming plus outgoing event value</small></div>
+    <div class="glass-panel network-kpi"><span>24h observed value</span><strong>{{ metrics.observed_value|floatformat:0 }} value units</strong><small>Synthetic incoming plus outgoing event value</small></div>
 </div>
 
 <div class="network-main-grid">
@@ -44,6 +44,7 @@
             <span><i class="legend-node legend-focal"></i> Focal recipient</span><span><i class="legend-node legend-sender"></i> Sender</span><span><i class="legend-node legend-downstream"></i> Downstream wallet</span><span><i class="legend-node legend-cashout"></i> Cash-out endpoint</span><span><i class="legend-line"></i> Risk-relevant path</span>
         </div>
     </section>
+    {% if scenario.key == "high-risk" %}<div class="detail-secondary-links"><a href="{% url 'dashboard:transaction_detail' 'TX-8420' %}">Back to Transaction Explanation</a></div>{% endif %}
 
     <aside class="glass-panel focal-panel" aria-labelledby="focal-wallet-title">
         <div class="section-header"><div><h2 id="focal-wallet-title">Focal Wallet</h2><p>{{ scenario.observation_window }}</p></div></div>
@@ -68,7 +69,7 @@
 <div class="network-lower-grid">
     <section class="glass-panel event-panel" aria-labelledby="event-table-title">
         <div class="section-header"><div><h2 id="event-table-title">Representative Transaction Flow</h2><p>Selected events from the same synthetic graph data</p></div></div>
-        <div class="table-scroll"><table class="transactions-table network-events"><thead><tr><th scope="col">Time</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Amount</th></tr></thead><tbody>{% for event in events|slice:":12" %}<tr class="{% if event.recipient == scenario.focal_wallet %}event-inbound{% elif event.transaction_type == 'CASH_OUT' %}event-cashout{% else %}event-outbound{% endif %}"><td>{{ event.time }}</td><td>{{ event.sender }}</td><td>{{ event.recipient }}</td><td>{{ event.transaction_type }}</td><td>${{ event.amount|floatformat:2 }}</td></tr>{% endfor %}</tbody></table></div>
+        <div class="table-scroll"><table class="transactions-table network-events"><thead><tr><th scope="col">Time</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Amount</th></tr></thead><tbody>{% for event in events|slice:":12" %}<tr class="{% if event.recipient == scenario.focal_wallet %}event-inbound{% elif event.transaction_type == 'CASH_OUT' %}event-cashout{% else %}event-outbound{% endif %}"><td>{{ event.time }}</td><td>{{ event.sender }}</td><td>{{ event.recipient }}</td><td>{{ event.transaction_type }}</td><td>{{ event.amount|floatformat:2 }} value units</td></tr>{% endfor %}</tbody></table></div>
     </section>
     <aside class="glass-panel node-inspector" aria-labelledby="node-inspector-title">
         <div class="section-header"><div><h2 id="node-inspector-title">Selected Node</h2><p>Keyboard and pointer selection</p></div></div>

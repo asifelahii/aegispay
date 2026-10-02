@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="AegisPay prototype risk intelligence dashboard">
+    <link rel="icon" href="{% static 'dashboard/favicon.svg' %}" type="image/svg+xml">
     <title>{% block title %}AegisPay · Risk Overview{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'dashboard/css/tokens.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/css/base.css' %}">
@@ -21,6 +22,7 @@
             <main id="main-content" class="app-main" role="main">
                 {% block content %}{% endblock %}
             </main>
+            <footer class="app-footer">AegisPay Hackathon Prototype · Synthetic evaluation data · Not a production payment or fraud-decision system</footer>
         </div>
     </div>
     <script src="{% static 'dashboard/js/shell.js' %}"></script>

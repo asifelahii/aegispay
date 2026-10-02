@@ -69,6 +69,7 @@
 </section>
 
 <section class="glass-panel evidence-panel limitations-panel" id="limitations" aria-labelledby="limitations-title"><div class="section-header"><div><h2 id="limitations-title">What this evidence does not establish</h2><p>Responsible interpretation is part of the result.</p></div><span class="badge badge-warning">Synthetic benchmark</span></div><ul class="evidence-list limitation-list"><li>Not production validation or measured fraud reduction.</li><li>Not real customer-response behavior or analyst workload evidence.</li><li>Not real upay transaction prevalence or economics.</li><li>Intervention effectiveness, friction, and operations costs are assumed/modelled.</li><li>No ML model is part of the current validated pipeline.</li></ul><p><strong>Current validated prototype:</strong> transparent rules, network indicators, selective context acquisition, and adaptive intervention policy.</p></section>
+<div class="evidence-cta"><span>Want to see the policy in action?</span><a class="secondary-action" href="{% url 'dashboard:payment_demo' %}">See the policy in action</a></div>
 {{ chart|json_script:"experiment-chart-data" }}
 {% endblock %}
 {% block extra_js %}<script src="{% static 'dashboard/js/experiment_charts.js' %}"></script>{% endblock %}

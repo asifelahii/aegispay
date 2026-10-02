@@ -3,15 +3,26 @@
 {% block content %}
 <div class="dashboard-header">
     <div>
-        <p class="eyebrow">Prototype dashboard</p>
+        <p class="eyebrow">Intent-aware adaptive scam intervention</p>
         <h1>Risk Overview</h1>
-        <p class="page-intro">Monitor transaction risk, intervention activity, and review demand across the AegisPay prototype.</p>
+        <p class="page-intro">AegisPay combines transaction behavior, recipient-network signals, and selective customer context to choose the minimum effective intervention.</p>
     </div>
     <span class="badge badge-prototype">
         <span class="status-dot" aria-hidden="true"></span>
         Synthetic demo data
     </span>
 </div>
+
+<section class="glass-panel product-journey" aria-labelledby="journey-title">
+    <div class="section-header"><div><h2 id="journey-title">Hackathon Demo Journey</h2><p>Follow one payment from customer context to analyst evidence.</p></div><a class="secondary-action" href="{% url 'dashboard:payment_demo' %}">Run Customer Demo</a></div>
+    <div class="journey-steps">
+        <a href="{% url 'dashboard:payment_demo' %}"><strong>1</strong><span>Customer payment</span><small>Start with a normal or guided scenario</small></a>
+        <a href="{% url 'dashboard:payment_demo' %}"><strong>2</strong><span>Selective context</span><small>Ask only when the answer can change the decision</small></a>
+        <a href="{% url 'dashboard:transaction_detail' 'TX-8420' %}"><strong>3</strong><span>Analyst explanation</span><small>Inspect evidence and intervention reasoning</small></a>
+        <a href="{% url 'dashboard:network_intelligence' %}?scenario=high-risk"><strong>4</strong><span>Recipient network</span><small>Inspect connected wallet relationships</small></a>
+        <a href="{% url 'dashboard:experiment_evidence' %}"><strong>5</strong><span>Validation evidence</span><small>Review controlled synthetic evaluations</small></a>
+    </div>
+</section>
 
 <section class="metric-grid" aria-label="Risk overview metrics">
     {% for metric in metrics %}

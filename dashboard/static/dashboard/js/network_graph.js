@@ -17,7 +17,7 @@
         const outgoing = data.edges.filter((edge) => edge.source === nodeId);
         const incomingAmount = incoming.reduce((sum, edge) => sum + Number(edge.amount), 0);
         const outgoingAmount = outgoing.reduce((sum, edge) => sum + Number(edge.amount), 0);
-        inspector.innerHTML = "<strong>" + node.id + "</strong><p>" + node.role + "</p><dl><dt>Incoming transactions</dt><dd>" + incoming.reduce((sum, edge) => sum + edge.count, 0) + "</dd><dt>Outgoing transactions</dt><dd>" + outgoing.reduce((sum, edge) => sum + edge.count, 0) + "</dd><dt>Incoming amount</dt><dd>$" + incomingAmount.toFixed(2) + "</dd><dt>Outgoing amount</dt><dd>$" + outgoingAmount.toFixed(2) + "</dd><dt>Relationship</dt><dd>" + (node.kind === "focal" ? "Focal recipient" : "Connected to focal recipient") + "</dd></dl>";
+        inspector.innerHTML = "<strong>" + node.id + "</strong><p>" + node.role + "</p><dl><dt>Incoming transactions</dt><dd>" + incoming.reduce((sum, edge) => sum + edge.count, 0) + "</dd><dt>Outgoing transactions</dt><dd>" + outgoing.reduce((sum, edge) => sum + edge.count, 0) + "</dd><dt>Incoming amount</dt><dd>" + incomingAmount.toFixed(2) + " value units</dd><dt>Outgoing amount</dt><dd>" + outgoingAmount.toFixed(2) + " value units</dd><dt>Relationship</dt><dd>" + (node.kind === "focal" ? "Focal recipient" : "Connected to focal recipient") + "</dd></dl>";
     }
 
     data.edges.forEach((edge) => {

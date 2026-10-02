@@ -1,4 +1,5 @@
 {% extends "dashboard/customer/base.html" %}
+{% block title %}AegisPay · Customer Demo{% endblock %}
 {% block content %}
 <div class="customer-layout">
     <section class="payment-card" aria-labelledby="payment-title">
@@ -36,6 +37,12 @@
         </select>
         {% for error in form.scenario.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
         <p class="control-note">The scenario is submitted with the payment form; these controls are intentionally outside the customer card.</p>
+        <div class="scenario-guide" aria-labelledby="scenario-guide-title">
+            <strong id="scenario-guide-title">Prototype scenario guide</strong>
+            <span><b>Normal payment</b> · No unnecessary security friction</span>
+            <span><b>Guided / impersonation risk</b> · One decision-relevant question changes intervention</span>
+            <span><b>Strong evidence</b> · No unnecessary question when evidence is sufficient</span>
+        </div>
     </aside>
 </div>
 {% endblock %}

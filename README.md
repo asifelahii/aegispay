@@ -11,3 +11,11 @@ minimum effective intervention while balancing customer friction and
 operational capacity.
 
 > Development in progress.
+
+## Demo Routes
+
+- `/` redirects to the analyst overview.
+- `/demo/` opens the customer payment and Context Probe demonstration.
+- `/dashboard/transactions/TX-8420/` opens the supported analyst explanation.
+- `/dashboard/network/` opens synthetic recipient-network intelligence.
+- `/dashboard/experiments/` opens the curated validation evidence dashboard.
