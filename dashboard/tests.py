@@ -4,8 +4,9 @@ from django.urls import reverse
 from core.contracts import ScamContext
 from dashboard.presenters.payment_demo import context_for_answer
 from dashboard.presenters.network_intelligence import present_network
+from dashboard.presenters.experiment_evidence import present_experiment_evidence
 
-class DashboardOverviewTests(SimpleTestCase):
+class DashboardOverviewIntroTests(SimpleTestCase):
     def get_dashboard(self):
         return self.client.get(reverse("dashboard:overview"))
 
@@ -42,6 +43,69 @@ class DashboardOverviewTests(SimpleTestCase):
         ):
             with self.subTest(label=label):
                 self.assertContains(response, label)
+
+
+class ExperimentEvidenceTests(SimpleTestCase):
+    def get_page(self):
+        return self.client.get(reverse("dashboard:experiment_evidence"))
+
+    def test_experiment_evidence_route_resolves_and_returns_200(self):
+        self.assertEqual(reverse("dashboard:experiment_evidence"), "/dashboard/experiments/")
+        self.assertEqual(self.get_page().status_code, 200)
+
+    def test_page_uses_expected_template_and_branding(self):
+        response = self.get_page()
+        self.assertTemplateUsed(response, "dashboard/experiment_evidence.html")
+        self.assertContains(response, "AegisPay")
+        self.assertContains(response, "Experiment Evidence")
+        self.assertContains(response, "Prototype evidence snapshot")
+
+    def test_reference_comparison_shows_tradeoff_and_modeled_units(self):
+        response = self.get_page()
+        for text in ("Legacy Context Probe", "Canonical Decision-Relevant Context Probe", "higher analyst review demand", "modeled cost units"):
+                self.assertContains(response, text)
+        self.assertContains(response, "Review allocations")
+
+    def test_exp01_scope_and_matrix_render(self):
+        response = self.get_page()
+        for text in ("EXP-01", "25 controlled cells", "Seed \\ Capacity", "25 / 25 controlled cells"):
+                self.assertContains(response, text)
+
+    def test_exp02_profiles_and_scope_render(self):
+        response = self.get_page()
+        for text in ("EXP-02", "Equal family", "Social-engineering heavy", "50 controlled cells globally", "synthetic benchmark constructions"):
+                self.assertContains(response, text)
+
+    def test_exp03a_renders_six_probe_cost_points_and_chart_payload(self):
+        response = self.get_page()
+        for value in (0, 10, 25, 50, 100, 200):
+                self.assertContains(response, f"<th scope=\"row\">{value}</th>", html=True)
+        self.assertContains(response, 'id="experiment-chart-data"')
+        self.assertContains(response, "canonical line remains below")
+
+    def test_exp03b_distinguishes_per_profile_and_global_scope(self):
+        response = self.get_page()
+        self.assertContains(response, "Every assumption profile contains exactly 50 controlled cells")
+        self.assertContains(response, "Global scope: 350 controlled cells · 700 strategy runs")
+        self.assertContains(response, "prevention better/equal/worse: 350/0/0")
+        self.assertContains(response, "friction lower/equal/higher: 350/0/0")
+        self.assertContains(response, "modeled cost lower/equal/higher: 350/0/0")
+
+    def test_limitation_language_is_prominent(self):
+        response = self.get_page()
+        for text in ("What this evidence does not establish", "Not production validation", "Not real customer-response behavior", "No ML model"):
+                self.assertContains(response, text)
+
+    def test_presenter_is_deterministic_and_does_not_run_experiments(self):
+        first = present_experiment_evidence()
+        second = present_experiment_evidence()
+        self.assertEqual(first, second)
+        self.assertEqual(first["exp03a"]["probe_costs"], [0, 10, 25, 50, 100, 200])
+        self.assertEqual(first["exp03b"]["global_controlled_cells"], 350)
+
+class DashboardOverviewTests(SimpleTestCase):
+    def get_dashboard(self):
+        return self.client.get(reverse("dashboard:overview"))
 
     def test_main_navigation_labels_render(self):
         response = self.get_dashboard()

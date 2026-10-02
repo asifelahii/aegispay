@@ -1,0 +1,75 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}AegisPay · Experiment Evidence{% endblock %}
+{% block content %}
+<div class="dashboard-header evidence-header">
+    <div>
+        <p class="eyebrow">Synthetic prototype validation</p>
+        <h1>Experiment Evidence</h1>
+        <p class="page-intro">What the controlled evaluations support about the canonical Decision-Relevant Context Probe—and what they do not establish.</p>
+    </div>
+    <span class="badge badge-prototype"><span class="status-dot" aria-hidden="true"></span>Prototype evidence snapshot</span>
+</div>
+
+<nav class="evidence-nav" aria-label="Evidence sections">
+    <a href="#reference">Reference</a><a href="#robustness">Robustness</a><a href="#exp-01">EXP-01</a><a href="#exp-02">EXP-02</a><a href="#exp-03a">EXP-03A</a><a href="#exp-03b">EXP-03B</a><a href="#limitations">Limitations</a>
+</nav>
+
+<section class="glass-panel evidence-panel reference-panel" id="reference" aria-labelledby="reference-title">
+    <div class="section-header"><div><h2 id="reference-title">Reference Comparison</h2><p>Matched configuration: {{ reference.configuration.count }} scenarios · seed {{ reference.configuration.seed }} · review capacity {{ reference.configuration.review_capacity }}</p></div><span class="badge badge-info">Legacy vs canonical</span></div>
+    <div class="strategy-headers"><div><strong>{{ reference.legacy.label }}</strong></div><div><strong>{{ reference.canonical.label }}</strong></div></div>
+    <div class="comparison-table">
+        <div class="comparison-row comparison-head"><span>Metric</span><span>Legacy</span><span>Canonical</span><span>Delta</span></div>
+        {% for metric in reference_metrics %}<div class="comparison-row"><span>{{ metric.label }}</span><strong>{{ metric.legacy }}</strong><strong>{{ metric.canonical }}</strong><b class="delta-{{ metric.kind }}">{{ metric.delta }}</b></div>{% endfor %}
+    </div>
+    <div class="tradeoff-callout"><strong>Important trade-off: higher analyst review demand</strong><span>Human review allocations increased from {{ reference.legacy.allocated_reviews }} to {{ reference.canonical.allocated_reviews }}. This is not presented as a reduction.</span></div>
+    <p class="unit-note">Costs are modeled cost units, not currency, production savings, or measured economics.</p>
+</section>
+
+<section class="evidence-section" id="robustness" aria-labelledby="robustness-title">
+    <div class="section-header"><div><h2 id="robustness-title">Robustness Evidence</h2><p>Directional comparisons across seeds, mixtures, probe friction, and intervention assumptions</p></div></div>
+    <div class="evidence-layer-grid">
+        <a class="glass-panel evidence-layer-card" href="#exp-01"><span>EXP-01</span><strong>25 cells</strong><small>Seed × review capacity</small><b class="status-pass">PASS · 25/25</b></a>
+        <a class="glass-panel evidence-layer-card" href="#exp-02"><span>EXP-02</span><strong>50 cells</strong><small>Scenario mixtures</small><b class="status-pass">PASS · 50/50</b></a>
+        <a class="glass-panel evidence-layer-card" href="#exp-03a"><span>EXP-03A</span><strong>6 costs</strong><small>Probe friction sensitivity</small><b class="status-pass">NO REVERSAL</b></a>
+        <a class="glass-panel evidence-layer-card" href="#exp-03b"><span>EXP-03B</span><strong>350 cells</strong><small>Intervention assumptions</small><b class="status-pass">PASS · 350/350</b></a>
+    </div>
+</section>
+
+<section class="glass-panel evidence-panel" id="exp-01" aria-labelledby="exp-01-title">
+    <div class="section-header"><div><h2 id="exp-01-title">EXP-01 · Seed × Review Capacity Robustness</h2><p>{{ exp01.controlled_cells }} controlled cells; same synthetic population per comparison</p></div><span class="badge badge-success">Directional advantage</span></div>
+    <div class="matrix-scroll"><table class="evidence-matrix"><caption class="sr-only">EXP-01 directional comparison matrix</caption><thead><tr><th scope="col">Seed \ Capacity</th>{% for capacity in exp01.capacities %}<th scope="col">{{ capacity }}</th>{% endfor %}</tr></thead><tbody>{% for row in exp01.matrix %}<tr><th scope="row">{{ row.seed }}</th>{% for cell in row.cells %}<td><span class="matrix-check" role="img" aria-label="{{ cell.label }}">✓</span></td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+    <p class="matrix-note"><strong>25 / 25 controlled cells</strong> had fewer probes, better synthetic prevention, lower modeled cost, and lower legitimate friction. No review-capacity violations occurred. {{ exp01.review_tradeoff }}</p>
+    <div class="range-grid"><span>Prevention delta <strong>+5.10% to +6.67%</strong></span><span>Modeled cost delta <strong>−52,594.65 to −43,789.50</strong></span></div>
+</section>
+
+<section class="glass-panel evidence-panel" id="exp-02" aria-labelledby="exp-02-title">
+    <div class="section-header"><div><h2 id="exp-02-title">EXP-02 · Scenario-Mixture Sensitivity</h2><p>Each profile contains 10 controlled cells; 50 controlled cells globally</p></div><span class="badge badge-success">Directional advantage</span></div>
+    <div class="profile-grid">{% for profile in exp02.profiles %}<div class="profile-card"><strong>{{ profile.label }}</strong><span>{{ profile.controlled_cells }} cells</span><b>✓ Fewer probes · better prevention · lower cost</b></div>{% endfor %}</div>
+    <div class="range-grid"><span>Prevention delta range <strong>+4.41% to +9.27%</strong></span><span>Modeled cost delta range <strong>−72,816.50 to −14,781.85</strong></span><span>Largest review increase <strong>+16</strong></span></div>
+    <p class="caveat-note">{{ exp02.caveat }}</p>
+</section>
+
+<section class="glass-panel evidence-panel" id="exp-03a" aria-labelledby="exp-03a-title">
+    <div class="section-header"><div><h2 id="exp-03a-title">EXP-03A · Context Probe Friction Sensitivity</h2><p>Mean modeled total cost across six evaluation-only probe-cost assumptions</p></div><span class="badge badge-success">No sign reversal</span></div>
+    <div class="chart-wrap"><svg id="friction-chart" viewBox="0 0 760 290" role="img" aria-labelledby="friction-chart-title friction-chart-description"><title id="friction-chart-title">Modeled total cost by probe friction assumption</title><desc id="friction-chart-description">The canonical line remains below the legacy line at all six tested probe-cost assumptions.</desc><g class="chart-grid-lines"></g><g class="chart-lines"></g><g class="chart-labels"></g></svg></div>
+    <div class="table-scroll"><table class="evidence-data-table"><caption>Underlying EXP-03A mean modeled total cost values</caption><thead><tr><th scope="col">Probe friction</th><th scope="col">Legacy</th><th scope="col">Canonical</th></tr></thead><tbody>{% for row in exp03a.rows %}<tr><th scope="row">{{ row.probe_cost }}</th><td>{{ row.legacy }}</td><td>{{ row.canonical }}</td></tr>{% endfor %}</tbody></table></div>
+    <p class="matrix-note">{{ exp03a.interpretation }} Canonical modeled total cost is lower at every tested value.</p>
+</section>
+
+<section class="glass-panel evidence-panel" id="exp-03b" aria-labelledby="exp-03b-title">
+    <div class="section-header"><div><h2 id="exp-03b-title">EXP-03B · Intervention-Assumption Sensitivity</h2><p>Every assumption profile contains exactly {{ exp03b.cells_per_profile }} controlled cells.</p></div><span class="badge badge-success">Global directional advantage</span></div>
+    <div class="table-scroll"><table class="evidence-data-table assumption-table"><thead><tr><th scope="col">Assumption profile</th><th scope="col">Scope</th><th scope="col">Fewer probes</th><th scope="col">Prevention</th><th scope="col">Friction</th><th scope="col">Modeled cost</th><th scope="col">Review trade-off</th></tr></thead><tbody>{% for profile in exp03b.assumption_profiles %}<tr><th scope="row">{{ profile.label }}</th><td>{{ profile.controlled_cells }} cells</td><td>{{ profile.fewer_probe_cells }}/50</td><td>{{ profile.prevention_better_cells }}/50</td><td>{{ profile.friction_lower_cells }}/50</td><td>{{ profile.cost_lower_cells }}/50</td><td>+{{ profile.largest_review_delta }}</td></tr>{% endfor %}</tbody></table></div>
+    <div class="global-summary"><strong>Global scope: {{ exp03b.global_controlled_cells }} controlled cells · {{ exp03b.strategy_runs }} strategy runs</strong><span>Fewer probes: {{ exp03b.global.fewer_probe_cells }}/350 · prevention better/equal/worse: {{ exp03b.global.prevention_better_cells }}/{{ exp03b.global.prevention_equal_cells }}/{{ exp03b.global.prevention_worse_cells }} · friction lower/equal/higher: {{ exp03b.global.friction_lower_cells }}/{{ exp03b.global.friction_equal_cells }}/{{ exp03b.global.friction_higher_cells }} · modeled cost lower/equal/higher: {{ exp03b.global.cost_lower_cells }}/{{ exp03b.global.cost_equal_cells }}/{{ exp03b.global.cost_higher_cells }}</span></div>
+</section>
+
+<section class="evidence-grid-bottom">
+    <section class="glass-panel evidence-panel" aria-labelledby="method-title"><h2 id="method-title">How to read these experiments</h2><ul class="evidence-list"><li>Legacy and canonical strategies use matched synthetic inputs under controlled conditions.</li><li>Ground truth is evaluation-only; runtime decisions do not receive <code>is_scam</code> or scenario labels.</li><li>Review capacity remains constrained in the comparisons.</li><li>Protection, friction, operations, and review costs are prototype assumptions.</li></ul></section>
+    <section class="glass-panel evidence-panel" aria-labelledby="promotion-title"><h2 id="promotion-title">Why the candidate was promoted</h2><p>The Decision-Relevant Context Probe maintained its directional advantage across random seeds, review capacities, scenario mixtures, Context Probe friction assumptions, and intervention-economics assumptions.</p><p class="unit-note">This supports the canonical AegisPay prototype policy. It is not production validation.</p></section>
+</section>
+
+<section class="glass-panel evidence-panel limitations-panel" id="limitations" aria-labelledby="limitations-title"><div class="section-header"><div><h2 id="limitations-title">What this evidence does not establish</h2><p>Responsible interpretation is part of the result.</p></div><span class="badge badge-warning">Synthetic benchmark</span></div><ul class="evidence-list limitation-list"><li>Not production validation or measured fraud reduction.</li><li>Not real customer-response behavior or analyst workload evidence.</li><li>Not real upay transaction prevalence or economics.</li><li>Intervention effectiveness, friction, and operations costs are assumed/modelled.</li><li>No ML model is part of the current validated pipeline.</li></ul><p><strong>Current validated prototype:</strong> transparent rules, network indicators, selective context acquisition, and adaptive intervention policy.</p></section>
+{{ chart|json_script:"experiment-chart-data" }}
+{% endblock %}
+{% block extra_js %}<script src="{% static 'dashboard/js/experiment_charts.js' %}"></script>{% endblock %}
+{% block extra_css %}{% endblock %}

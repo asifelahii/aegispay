@@ -625,7 +625,38 @@ the node inspector is client-side display only, no production graph database or
 analyst enforcement action exists, and no graph model or new detection logic
 was added.
 
-Next UI task: **UI Phase 5: Experiment Evidence & Validation Dashboard**
+## UI Phase 5: Experiment Evidence & Validation Dashboard
+
+Added `/dashboard/experiments/` (`dashboard:experiment_evidence`) as a
+read-only analyst evidence page. The page loads a curated,
+version-controlled snapshot from `dashboard/data/experiment_evidence.json`;
+HTTP requests never rerun experiment services or read the raw `artifacts/`
+outputs. A thin presenter derives reference deltas and chart/table payloads
+from that snapshot.
+
+The page presents the matched legacy/canonical reference comparison, including
+the increased review-demand trade-off, EXP-01 seed/capacity robustness,
+EXP-02 synthetic mixture profiles, EXP-03A's six probe-friction points with a
+native SVG chart and accessible table, and EXP-03B's per-assumption and global
+scopes. EXP-03B explicitly distinguishes 50 cells per assumption profile from
+350 cells globally and 700 strategy runs.
+
+The evidence copy keeps the prototype boundaries visible: synthetic scenarios
+and weights, modeled intervention/cost assumptions, evaluation-only ground
+truth, no production fraud-reduction claim, no observed customer behavior or
+analyst workload study, and no ML model in the validated pipeline. The
+Experiments sidebar item is now a functional, active namespaced link.
+
+Focused dashboard tests cover route/template/branding, reference trade-offs,
+all experiment scopes, six chart points and payload, limitation language,
+and deterministic snapshot presentation. Native repository-owned SVG
+JavaScript is used for the chart; no external chart library was added.
+
+Current limitations: the page is a curated synthetic evidence snapshot, not a
+live experiment runner or production monitoring surface. Modeled cost units
+are not currency or measured economics.
+
+Next UI task: **UI Phase 6: Final Product Integration, Demo Polish & Submission UX**
 
 ## Future Backlog
 

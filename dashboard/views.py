@@ -7,6 +7,7 @@ from .presenters.payment_demo import (
     present_customer_decision,
 )
 from .presenters.network_intelligence import present_network
+from .presenters.experiment_evidence import present_experiment_evidence
 from .presenters.transaction_detail import present_transaction_detail
 
 
@@ -142,6 +143,12 @@ def network_intelligence(request):
     context = present_network(scenario)
     context["active_section"] = "network"
     return render(request, "dashboard/network_intelligence.html", context)
+
+
+def experiment_evidence(request):
+    context = present_experiment_evidence()
+    context["active_section"] = "experiments"
+    return render(request, "dashboard/experiment_evidence.html", context)
 
 
 def payment_demo(request):

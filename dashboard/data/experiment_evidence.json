@@ -1,0 +1,104 @@
+{
+  "snapshot_version": "phase-5-curated-v1",
+  "currency_note": "All cost values are modeled cost units, not currency or production economics.",
+  "reference": {
+    "configuration": {
+      "count": 600,
+      "seed": 42,
+      "review_capacity": 20
+    },
+    "legacy": {
+      "label": "Legacy Context Probe",
+      "probe_rate": 0.875,
+      "prevention_rate": 0.3093,
+      "residual_scam_loss": 705343.30,
+      "legitimate_total_friction": 27990.00,
+      "allocated_reviews": 3,
+      "total_modeled_cost": 761733.30
+    },
+    "canonical": {
+      "label": "Canonical Decision-Relevant Context Probe",
+      "probe_rate": 0.60,
+      "prevention_rate": 0.3760,
+      "residual_scam_loss": 637291.80,
+      "legitimate_total_friction": 26215.00,
+      "allocated_reviews": 14,
+      "total_modeled_cost": 711376.80
+    }
+  },
+  "exp01": {
+    "id": "EXP-01",
+    "description": "Seed and review-capacity robustness",
+    "seeds": [7, 21, 42, 84, 126],
+    "capacities": [0, 5, 10, 20, 40],
+    "controlled_cells": 25,
+    "fewer_probe_cells": 25,
+    "prevention_better_cells": 25,
+    "cost_lower_cells": 25,
+    "friction_lower_cells": 25,
+    "no_capacity_violations": true,
+    "prevention_delta_range": [0.0510, 0.0667],
+    "cost_delta_range": [-52594.65, -43789.50],
+    "review_tradeoff": "Candidate review demand increased and approached a mean of about 10.8 allocations at larger capacities."
+  },
+  "exp02": {
+    "id": "EXP-02",
+    "description": "Scenario-mixture sensitivity",
+    "profiles": [
+      {"key": "EQUAL_FAMILY", "label": "Equal family", "controlled_cells": 10, "fewer_probe_cells": 10, "prevention_better_cells": 10, "friction_lower_cells": 10, "cost_lower_cells": 10},
+      {"key": "LEGITIMATE_DOMINANT", "label": "Legitimate dominant", "controlled_cells": 10, "fewer_probe_cells": 10, "prevention_better_cells": 10, "friction_lower_cells": 10, "cost_lower_cells": 10},
+      {"key": "HARD_NEGATIVE_DOMINANT", "label": "Hard-negative dominant", "controlled_cells": 10, "fewer_probe_cells": 10, "prevention_better_cells": 10, "friction_lower_cells": 10, "cost_lower_cells": 10},
+      {"key": "SOCIAL_ENGINEERING_HEAVY", "label": "Social-engineering heavy", "controlled_cells": 10, "fewer_probe_cells": 10, "prevention_better_cells": 10, "friction_lower_cells": 10, "cost_lower_cells": 10},
+      {"key": "NETWORK_ABUSE_HEAVY", "label": "Network-abuse heavy", "controlled_cells": 10, "fewer_probe_cells": 10, "prevention_better_cells": 10, "friction_lower_cells": 10, "cost_lower_cells": 10}
+    ],
+    "controlled_cells": 50,
+    "fewer_probe_cells": 50,
+    "prevention_better_cells": 50,
+    "friction_lower_cells": 50,
+    "cost_lower_cells": 50,
+    "prevention_delta_range": [0.0441, 0.0927],
+    "cost_delta_range": [-72816.50, -14781.85],
+    "largest_review_delta": 16,
+    "caveat": "Scenario weights are synthetic benchmark constructions, not estimates of real mobile-financial-services scam prevalence."
+  },
+  "exp03a": {
+    "id": "EXP-03A",
+    "description": "Context Probe friction sensitivity",
+    "probe_costs": [0, 10, 25, 50, 100, 200],
+    "controlled_cells": 300,
+    "strategy_runs": 600,
+    "legacy_costs": [574461.845, 576273.845, 578991.845, 583521.845, 592581.845, 610701.845],
+    "canonical_costs": [538578.315, 538779.115, 540160.315, 542462.315, 547066.315, 556274.315],
+    "canonical_lower_at_all_costs": true,
+    "runtime_outcomes_invariant": true,
+    "interpretation": "Probe friction is an evaluation/accounting assumption in this experiment; changing it does not change runtime policy decisions."
+  },
+  "exp03b": {
+    "id": "EXP-03B",
+    "assumption_profiles": [
+      {"key": "BASELINE", "label": "Baseline", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.06228, "mean_cost_delta": -38831.525, "largest_review_delta": 16},
+      {"key": "LOWER_PROTECTION", "label": "Lower protection", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.06762, "mean_cost_delta": -38891.1696, "largest_review_delta": 0},
+      {"key": "HIGHER_PROTECTION", "label": "Higher protection", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.07994, "mean_cost_delta": -54386.1824, "largest_review_delta": 0},
+      {"key": "HIGH_CUSTOMER_FRICTION", "label": "High customer friction", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.07378, "mean_cost_delta": -50855.0, "largest_review_delta": 0},
+      {"key": "HIGH_OPERATIONS_COST", "label": "High operations cost", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.055068, "mean_cost_delta": -31075.472, "largest_review_delta": 0},
+      {"key": "HIGH_REVIEW_COST", "label": "High review cost", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.058204, "mean_cost_delta": -39193.2, "largest_review_delta": 0},
+      {"key": "CONSERVATIVE_STRESS", "label": "Conservative stress", "controlled_cells": 50, "fewer_probe_cells": 50, "prevention_better_cells": 50, "friction_lower_cells": 50, "cost_lower_cells": 50, "mean_prevention_delta": 0.06762, "mean_cost_delta": -24191.1696, "largest_review_delta": 0}
+    ],
+    "cells_per_profile": 50,
+    "global_controlled_cells": 350,
+    "strategy_runs": 700,
+    "global": {
+      "fewer_probe_cells": 350,
+      "prevention_better_cells": 350,
+      "prevention_equal_cells": 0,
+      "prevention_worse_cells": 0,
+      "friction_lower_cells": 350,
+      "friction_equal_cells": 0,
+      "friction_higher_cells": 0,
+      "cost_lower_cells": 350,
+      "cost_equal_cells": 0,
+      "cost_higher_cells": 0,
+      "no_capacity_violations": true
+    }
+  }
+}

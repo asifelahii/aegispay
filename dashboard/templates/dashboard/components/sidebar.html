@@ -27,10 +27,10 @@
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="network" %}</span>
             <span>Network Intelligence</span>
         </a>
-        <span class="nav-item nav-item-disabled" aria-disabled="true">
+        <a class="nav-item{% if active_section == 'experiments' %} is-active{% endif %}" href="{% url 'dashboard:experiment_evidence' %}"{% if active_section == 'experiments' %} aria-current="page"{% endif %}>
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="flask" %}</span>
-            <span>Experiments</span><span class="nav-soon">Soon</span>
-        </span>
+            <span>Experiments</span>
+        </a>
         <span class="nav-item nav-item-disabled" aria-disabled="true">
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="file" %}</span>
             <span>Reports</span><span class="nav-soon">Soon</span>
