@@ -19,6 +19,9 @@ class ContextProbeResult:
 
 class ContextProbeService:
     """
+    Legacy Context Probe heuristic baseline retained for explicit
+    experiment and historical comparison use.
+
     Selectively asks for one piece of scam context when transaction
     evidence is concerning but not yet decisive.
 

@@ -16,6 +16,12 @@ from interventions.services.decision import (
     AegisPayDecisionService,
     DecisionStatus,
 )
+from interventions.services.context_probe import (
+    ContextProbeService,
+)
+from interventions.services.selective_context_probe import (
+    DecisionRelevantContextProbeService,
+)
 
 
 class AegisPayDecisionServiceTests(
@@ -81,6 +87,128 @@ class AegisPayDecisionServiceTests(
         self.assertEqual(
             decision.policy.action,
             InterventionAction.ALLOW,
+        )
+
+    def test_default_uses_decision_relevant_context_probe(self):
+        self.assertIsInstance(
+            self.service.context_probe,
+            DecisionRelevantContextProbeService,
+        )
+
+    def test_legacy_context_probe_can_be_explicitly_injected(self):
+        service = AegisPayDecisionService(
+            context_probe=ContextProbeService()
+        )
+
+        self.assertIsInstance(
+            service.context_probe,
+            ContextProbeService,
+        )
+
+    def test_promoted_default_skips_non_decision_relevant_probe(self):
+        risk = self.make_risk(
+            score=0.25,
+            band=RiskBand.MEDIUM,
+            reasons=(
+                DecisionReason(
+                    code="NEW_RECIPIENT",
+                    message="New recipient.",
+                    contribution=0.15,
+                ),
+                DecisionReason(
+                    code="HIGH_AMOUNT_DEVIATION",
+                    message="High amount.",
+                    contribution=0.10,
+                ),
+            ),
+        )
+
+        decision = self.service.decide(
+            transaction=self.make_transaction(
+                amount="500.00",
+                is_new_recipient=True,
+            ),
+            base_risk=risk,
+        )
+
+        self.assertEqual(decision.status, DecisionStatus.DECIDED)
+        self.assertIsNone(decision.context_question)
+
+    def test_promoted_default_asks_decision_relevant_question(self):
+        risk = self.make_risk(
+            score=0.35,
+            band=RiskBand.MEDIUM,
+            reasons=(
+                DecisionReason(
+                    code="NEW_RECIPIENT",
+                    message="New recipient.",
+                    contribution=0.15,
+                ),
+                DecisionReason(
+                    code="HIGH_AMOUNT_DEVIATION",
+                    message="High amount.",
+                    contribution=0.10,
+                ),
+                DecisionReason(
+                    code="ABOVE_SENDER_P95",
+                    message="Above sender p95.",
+                    contribution=0.10,
+                ),
+            ),
+        )
+
+        decision = self.service.decide(
+            transaction=self.make_transaction(
+                is_new_recipient=True,
+            ),
+            base_risk=risk,
+        )
+
+        self.assertEqual(
+            decision.status,
+            DecisionStatus.NEEDS_CONTEXT,
+        )
+        self.assertEqual(
+            decision.context_question.code,
+            "PROMISED_BENEFIT",
+        )
+
+    def test_legacy_injection_preserves_legacy_question_behavior(self):
+        service = AegisPayDecisionService(
+            context_probe=ContextProbeService()
+        )
+        risk = self.make_risk(
+            score=0.25,
+            band=RiskBand.MEDIUM,
+            reasons=(
+                DecisionReason(
+                    code="NEW_RECIPIENT",
+                    message="New recipient.",
+                    contribution=0.15,
+                ),
+                DecisionReason(
+                    code="HIGH_AMOUNT_DEVIATION",
+                    message="High amount.",
+                    contribution=0.10,
+                ),
+            ),
+        )
+
+        decision = service.decide(
+            transaction=self.make_transaction(
+                amount="500.00",
+                is_new_recipient=True,
+            ),
+            base_risk=risk,
+        )
+
+        self.assertEqual(
+            decision.status,
+            DecisionStatus.NEEDS_CONTEXT,
+        )
+        self.assertEqual(
+            decision.context_question.code,
+            "ACTIVE_PHONE_OR_CHAT",
         )
 
     def test_medium_risk_can_pause_for_context(self):

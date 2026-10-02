@@ -106,7 +106,7 @@ class PortfolioDecisionServiceTests(
             transaction_id="TX-CURRENT",
             sender_id="CUS-001",
             recipient_id="CUS-NEW",
-            amount="3000.00",
+            amount="5000.00",
         )
 
         result = self.service.decide(

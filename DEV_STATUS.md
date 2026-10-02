@@ -75,8 +75,10 @@ threshold policy. Current evidence does not prove the full hypothesis.
 
 The local artifacts are synthetic prototype simulations with `count=600`,
 `seed=42`, `review_capacity=20`, and a round-robin scenario mixture. Ground
-truth is recorded separately and used evaluation-only. The latest candidate
-artifact has `candidate_status=experimental_not_promoted`.
+truth is recorded separately and used evaluation-only. The latest sensitivity
+artifact records the pre-promotion experiment with
+`candidate_status=experimental_not_promoted`; runtime promotion is captured
+separately below.
 
 ## Latest Evidence
 
@@ -151,7 +153,7 @@ review capacities. The deterministic round-robin scenario-family mixture means
 seed changes primarily affect randomized transaction values, not scenario
 prevalence. This is not scenario-mixture sensitivity, realistic prevalence
 validation, production performance validation, or causal intervention evidence.
-The candidate remains **experimental / not promoted**.
+At that stage, the candidate remained **experimental / not promoted**.
 
 ## EXP-02 Scenario-Mixture Sensitivity
 
@@ -227,7 +229,7 @@ Each profile contains 10 cells: five seeds at each of two capacities.
 - Worst/best modeled-cost delta: **-14781.85 / -72816.50**.
 - Largest positive review-allocation delta: **+16**.
 
-The candidate remained **experimental / not promoted**. Review demand was
+At that stage, the candidate remained **experimental / not promoted**. Review demand was
 profile-sensitive, highest under `NETWORK_ABUSE_HEAVY`, where the mean review
 allocation delta was `+8.90`. `HARD_NEGATIVE_DOMINANT` and
 `LEGITIMATE_DOMINANT` had the lowest mean review delta at `+1.40`.
@@ -338,7 +340,7 @@ Each profile has 10 base cells: five seeds × two capacities.
 | SOCIAL_ENGINEERING_HEAVY | 200 | 10/0/0 | 10/0/0 | -51220.27 | -11440.00 |
 
 No candidate total-cost regression occurred at any tested probe-cost value.
-The candidate remained **experimental / not promoted**. At probe cost zero,
+At that stage, the candidate remained **experimental / not promoted**. At probe cost zero,
 total legitimate friction is equal because only intervention friction remains;
 from any positive tested cost onward, the candidate has lower legitimate probe
 and total friction. The candidate's modeled-cost advantage increases as the
@@ -403,12 +405,95 @@ intervention selection?
 - No actual production upay data is integrated.
 - No production causal intervention effects are measured.
 
-## Next Planned Work
+## EXP-03B Intervention-Assumption Sensitivity
 
-Run controlled intervention protection-, friction-, and operations-cost
-sensitivity before any candidate promotion. Keep the same prevention,
-friction, review-demand, and modeled-cost reporting used by EXP-01 through
-EXP-03A.
+Research question: does the Decision-Relevant Context Probe candidate retain
+its advantages over the legacy Context Probe when prototype intervention
+protection, customer-friction, and operational-cost assumptions vary?
+
+The experiment used the five EXP-02 mixture profiles, seeds
+`7, 21, 42, 84, 126`, capacities `5, 20`, count `600`, and seven assumption
+profiles: `BASELINE`, `LOWER_PROTECTION`, `HIGHER_PROTECTION`,
+`HIGH_CUSTOMER_FRICTION`, `HIGH_OPERATIONS_COST`, `HIGH_REVIEW_COST`, and
+`CONSERVATIVE_STRESS`. This produced **350 controlled cells** and **700
+strategy runs**. Each fixed mixture/seed population was reused across
+capacities, assumptions, and both strategies. The candidate's
+decision-relevance checks and final intervention selection used the same
+assumption-specific experiment policy.
+
+All transformations were applied to the repository baseline profiles:
+`LOWER_PROTECTION` multiplied non-zero protection by `0.80`;
+`HIGHER_PROTECTION` multiplied protection by `1.20` and capped it at `0.95`;
+`HIGH_CUSTOMER_FRICTION` multiplied friction by `2.0`;
+`HIGH_OPERATIONS_COST` multiplied operations cost by `2.0`;
+`HIGH_REVIEW_COST` multiplied only human-review operations cost by `3.0`; and
+`CONSERVATIVE_STRESS` combined protection `0.80`, friction `1.50`, and
+operations `2.00`. `ALLOW` remained all zero and all materialized values were
+validated as non-negative and within protection bounds.
+
+Each assumption profile covers **50 controlled cells**. Within every
+assumption, the candidate used fewer probes in **50/50** cells, had better
+prevention in **50/50** cells, lower legitimate total friction in **50/50**
+cells, and lower modeled cost in **50/50** cells. Across all seven
+assumptions, the global summary covers **350 controlled cells** and reports
+fewer probes in **350/350**, better prevention in **350/350**, lower legitimate
+total friction in **350/350**, and lower modeled cost in **350/350**. Mean
+prevention
+deltas ranged from `+0.0551` (`HIGH_OPERATIONS_COST`) to `+0.0799`
+(`HIGHER_PROTECTION`). Mean modeled-cost deltas ranged from `-54386.18`
+(`HIGHER_PROTECTION`) to `-24191.17` (`CONSERVATIVE_STRESS`). These are
+candidate-minus-legacy deltas.
+
+The artifact preserves both scopes: `candidate_summaries` contains one
+50-cell summary per assumption, while `global_candidate_summary` contains the
+derived 350-cell aggregate. The console labels identify the same distinction.
+
+| Assumption | Candidate mean requested / allocated reviews | Legacy mean requested / allocated reviews | Candidate full-capacity cells |
+|---|---:|---:|---:|
+| BASELINE | 5.80 / 4.46 | 0.64 / 0.64 | 10 |
+| LOWER_PROTECTION | 0 / 0 | 0 / 0 | 0 |
+| HIGHER_PROTECTION | 0 / 0 | 0 / 0 | 0 |
+| HIGH_CUSTOMER_FRICTION | 0 / 0 | 0 / 0 | 0 |
+| HIGH_OPERATIONS_COST | 0 / 0 | 0 / 0 | 0 |
+| HIGH_REVIEW_COST | 0 / 0 | 0 / 0 | 0 |
+| CONSERVATIVE_STRESS | 0 / 0 | 0 / 0 | 0 |
+
+The baseline candidate maximum requested and allocated review counts were
+both `16`; the legacy maximum was `3`. No allocation exceeded capacity. The
+full materialized artifact is
+`artifacts/context_probe_intervention_sensitivity.json` and is intentionally
+untracked. No candidate prevention, legitimate-friction, or modeled-cost
+regressions occurred in the tested grid.
+
+Decision-change analysis showed that assumption changes alter policy behavior,
+not merely accounting: the highest mean requested-action change rates were
+approximately `50.33%` for the candidate and `45.79%` for legacy under
+`CONSERVATIVE_STRESS`.
+These results are synthetic sensitivity evidence, not measured intervention
+effectiveness, customer harm, production economics, or a promotion decision.
+
+## Promotion
+
+The Decision-Relevant Context Probe has been promoted as the canonical
+AegisPay prototype Context Probe policy after consistent synthetic validation
+across seed, capacity, scenario-mixture, probe-friction, and
+intervention-assumption sensitivity experiments (EXP-01 through EXP-03B).
+
+`AegisPayDecisionService()` now defaults to
+`DecisionRelevantContextProbeService`. `ContextProbeService` remains available
+as the explicit legacy baseline for experiments, ablations, historical
+comparison, and regression analysis. Comparative experiment constructors
+explicitly inject their intended legacy or candidate policy.
+
+This promotion applies to the hackathon prototype only and does not constitute
+production validation. The evidence remains synthetic prototype evidence, not
+measured production fraud reduction, intervention effectiveness, customer
+behavior, or production economics.
+
+## Next Research Question
+
+What additional evidence and governance are required before considering the
+canonical prototype policy for any non-synthetic evaluation?
 
 ## Future Backlog
 
@@ -427,7 +512,15 @@ EXP-03A.
 Before modifying code, read this file, `.github/copilot-instructions.md`, the
 current README, the latest relevant tests, and the service/management command
 for the requested area. Inspect current Git status and preserve the untracked
-`artifacts/` directory. Do not promote the candidate automatically. The next
-research task should address intervention protection-, friction-, and
-operations-cost sensitivity, keeping ground truth evaluation-only and reporting
-prevention, friction, review demand, and modeled cost together.
+`artifacts/` directory. Do not promote the candidate automatically. The next research task should
+address whether the accumulated evidence justifies promotion, keeping ground
+truth evaluation-only and reporting prevention, friction, review demand, and
+modeled cost together.
+M  DEV_STATUS.md
+?? artifacts/
+?? experiments/management/commands/run_context_probe_intervention_sensitivity.py
+?? experiments/services/intervention_assumptions.py
+?? experiments/services/probe_intervention_sensitivity.py
+?? experiments/tests/test_intervention_assumptions.py
+?? experiments/tests/test_probe_intervention_sensitivity.py
+?? experiments/tests/test_probe_intervention_sensitivity_command.py

@@ -7,8 +7,8 @@ from core.contracts import (
     RiskAssessment,
     ScamContext,
 )
-from interventions.services.context_probe import (
-    ContextProbeService,
+from interventions.services.selective_context_probe import (
+    DecisionRelevantContextProbeService,
 )
 from interventions.services.context_risk import (
     ContextRiskAdjuster,
@@ -38,7 +38,7 @@ class AegisPayDecisionService:
     """
     Coordinates AegisPay's runtime decision workflow.
 
-    Baseline behavior:
+    Canonical prototype behavior:
 
     1. Start with transaction and base risk.
     2. If no customer context has been supplied, determine whether
@@ -48,7 +48,9 @@ class AegisPayDecisionService:
     5. Select the minimum-effective intervention.
 
     In v0, at most one context-probe interaction occurs before the
-    intervention decision. This avoids unnecessary repeated friction.
+    intervention decision. The default Context Probe is the
+    decision-relevant policy; the legacy heuristic remains available
+    through explicit dependency injection. This avoids unnecessary repeated friction.
     """
 
     def __init__(
@@ -57,9 +59,8 @@ class AegisPayDecisionService:
         context_risk_adjuster=None,
         intervention_policy=None,
     ):
-        self.context_probe = (
-            context_probe
-            or ContextProbeService()
+        self.context_probe = context_probe or (
+            DecisionRelevantContextProbeService()
         )
 
         self.context_risk_adjuster = (

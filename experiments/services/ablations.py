@@ -23,6 +23,12 @@ from interventions.services.policy import (
     MinimumEffectiveInterventionPolicy,
     PolicyDecision,
 )
+from interventions.services.decision import (
+    AegisPayDecisionService,
+)
+from interventions.services.selective_context_probe import (
+    DecisionRelevantContextProbeService,
+)
 from risk.services.rules import (
     RulesRiskEngine,
 )
@@ -427,7 +433,13 @@ class ContextProbeAblationService:
 
         self.full_runner = (
             full_runner
-            or AegisPayExperimentRunner()
+            or AegisPayExperimentRunner(
+                decision_service=AegisPayDecisionService(
+                    context_probe=(
+                        DecisionRelevantContextProbeService()
+                    )
+                )
+            )
         )
 
         self.friction_accounting = (

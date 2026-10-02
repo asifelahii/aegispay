@@ -13,6 +13,12 @@ from experiments.services.scenario_generator import (
     GeneratedScenario,
     ScenarioType,
 )
+from interventions.services.decision import (
+    AegisPayDecisionService,
+)
+from interventions.services.selective_context_probe import (
+    DecisionRelevantContextProbeService,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -97,7 +103,13 @@ class ExperimentDiagnosticsService:
 
         self.aegispay_runner = (
             aegispay_runner
-            or AegisPayExperimentRunner()
+            or AegisPayExperimentRunner(
+                decision_service=AegisPayDecisionService(
+                    context_probe=(
+                        DecisionRelevantContextProbeService()
+                    )
+                )
+            )
         )
 
     def analyze(

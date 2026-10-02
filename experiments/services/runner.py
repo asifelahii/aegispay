@@ -16,6 +16,9 @@ from interventions.services.decision import (
     AegisPayDecisionService,
     DecisionStatus,
 )
+from interventions.services.selective_context_probe import (
+    DecisionRelevantContextProbeService,
+)
 from risk.services.rules import RulesRiskEngine
 
 
@@ -75,7 +78,8 @@ class ExperimentResult:
 
 class AegisPayExperimentRunner:
     """
-    Runs synthetic scenarios through the complete AegisPay baseline.
+    Runs synthetic scenarios through the canonical AegisPay prototype
+    Context Probe policy unless a decision service is explicitly supplied.
 
     Experimental ground truth is used only after the decision process
     when calculating evaluation metrics.
@@ -101,7 +105,11 @@ class AegisPayExperimentRunner:
 
         self.decision_service = (
             decision_service
-            or AegisPayDecisionService()
+            or AegisPayDecisionService(
+                context_probe=(
+                    DecisionRelevantContextProbeService()
+                )
+            )
         )
 
         self.capacity_allocator = (

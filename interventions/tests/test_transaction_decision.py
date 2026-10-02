@@ -90,7 +90,7 @@ class PersistedTransactionDecisionServiceTests(
             transaction_id="TX-CURRENT",
             sender_id="CUS-001",
             recipient_id="CUS-NEW",
-            amount="3000.00",
+            amount="5000.00",
         )
 
         decision = self.service.decide(
