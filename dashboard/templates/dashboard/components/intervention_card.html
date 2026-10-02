@@ -1,0 +1,17 @@
+<div class="intervention-summary">
+    <div><span class="intervention-action">{{ intervention.action }}</span><p>{{ intervention.reason }}</p></div>
+    <span class="badge badge-high">Selected action</span>
+</div>
+<div class="intervention-metrics">
+    <div><span>Protection assumption</span><strong>{{ intervention.protection_rate }}</strong></div>
+    <div><span>Friction assumption</span><strong>{{ intervention.friction_cost }}</strong></div>
+    <div><span>Operations assumption</span><strong>{{ intervention.operations_cost }}</strong></div>
+    <div><span>Expected residual loss</span><strong>{{ intervention.residual_loss }}</strong></div>
+    <div><span>Total expected cost</span><strong>{{ intervention.total_cost }}</strong></div>
+</div>
+<p class="assumption-note">These values are prototype decision assumptions, not measured production economics.</p>
+{% if review.involved %}
+    <div class="review-note"><strong>Human review requested.</strong> {{ review.note }}</div>
+{% else %}
+    <div class="review-note">{{ review.note }}</div>
+{% endif %}

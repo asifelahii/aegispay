@@ -1,0 +1,93 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}AegisPay · Transaction {{ detail.transaction_id }}{% endblock %}
+
+{% block content %}
+<div class="detail-breadcrumb">
+    <a href="{% url 'dashboard:overview' %}">← Back to Risk Overview</a>
+</div>
+
+<header class="detail-header">
+    <div>
+        <p class="eyebrow">Transaction investigation · {{ detail.scenario_label }}</p>
+        <h1>{{ detail.transaction_id }}</h1>
+        <p class="page-intro">Evidence, context, and intervention reasoning for one prototype transaction.</p>
+    </div>
+    <div class="detail-header-status">
+        {% include "dashboard/components/risk_badge.html" with label=detail.risk_band_label|add:" risk" tone=detail.final_risk.band|lower %}
+        <strong class="detail-score">{{ detail.risk_score_label }}</strong>
+        <span class="badge badge-prototype"><span class="status-dot" aria-hidden="true"></span>Prototype / Synthetic</span>
+    </div>
+</header>
+
+<div class="detail-meta-strip">
+    <span><strong>Intervention</strong> {{ detail.intervention.action|title }}</span>
+    <span><strong>Occurred</strong> {{ detail.occurred_at_label }}</span>
+</div>
+
+<div class="detail-grid detail-grid-top">
+    <section class="glass-panel detail-panel" aria-labelledby="transaction-details-title">
+        <div class="section-header">
+            <div><h2 id="transaction-details-title">Transaction Details</h2><p>Observed transaction evidence</p></div>
+        </div>
+        <dl class="detail-definition-list">
+            <div><dt>Transaction ID</dt><dd>{{ detail.transaction.transaction_id }}</dd></div>
+            <div><dt>Amount</dt><dd>${{ detail.transaction.amount|floatformat:2 }}</dd></div>
+            <div><dt>Sender</dt><dd>{{ detail.transaction.sender_id }}</dd></div>
+            <div><dt>Recipient</dt><dd>{{ detail.transaction.recipient_id }}</dd></div>
+            <div><dt>Type</dt><dd>{{ detail.transaction_type_label }}</dd></div>
+            <div><dt>Sender account age</dt><dd>{{ detail.transaction.sender_account_age_days }} days</dd></div>
+            <div><dt>Recipient account age</dt><dd>{{ detail.transaction.recipient_account_age_days }} days</dd></div>
+            <div><dt>New recipient</dt><dd>{{ detail.transaction.is_new_recipient|yesno:"Yes,No" }}</dd></div>
+            <div><dt>Device changed</dt><dd>{{ detail.transaction.device_changed_recently|yesno:"Yes,No" }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="glass-panel detail-panel risk-assessment-panel" aria-labelledby="risk-assessment-title">
+        <div class="section-header">
+            <div><h2 id="risk-assessment-title">Risk Assessment</h2><p>Transparent rules-engine contributions</p></div>
+            <span class="badge badge-{{ detail.final_risk.band|lower }}">{{ detail.risk_band_label }} risk</span>
+        </div>
+        <div class="score-row">
+            <div class="score-ring score-{{ detail.final_risk.band|lower }}" role="img" aria-label="Risk score {{ detail.risk_score_label }}, {{ detail.risk_band_label }} risk"><strong>{{ detail.risk_score_label }}</strong></div>
+            <div><span class="score-label">Risk score</span><strong class="score-band">{{ detail.risk_band_label|upper }}</strong><p class="muted-copy">Risk evidence is explainable; this is not an ML or SHAP explanation.</p></div>
+        </div>
+        <div class="factor-list">
+            <h3>Top Risk Factors</h3>
+            {% for factor in detail.risk_factors %}
+                {% include "dashboard/components/factor_row.html" with factor=factor %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<div class="detail-grid detail-grid-middle">
+    <section class="glass-panel detail-panel" aria-labelledby="behavior-title">
+        <div class="section-header"><div><h2 id="behavior-title">Behavioral Intelligence</h2><p>Sender and transaction signals</p></div></div>
+        <div class="intelligence-grid">
+            {% for label, value in detail.behavioral_metrics %}
+                {% include "dashboard/components/intelligence_metric.html" with label=label value=value %}
+            {% endfor %}
+        </div>
+    </section>
+    <section class="glass-panel detail-panel" aria-labelledby="network-title">
+        <div class="section-header"><div><h2 id="network-title">Network Intelligence</h2><p>Beneficiary indicators; graph view is future work</p></div></div>
+        <div class="intelligence-grid">
+            {% for label, value in detail.network_metrics %}
+                {% include "dashboard/components/intelligence_metric.html" with label=label value=value highlighted=detail.network_reason_fired %}
+            {% endfor %}
+        </div>
+        <span class="future-action" aria-disabled="true">Open Network View · Soon</span>
+    </section>
+</div>
+
+<section class="glass-panel detail-panel context-panel" aria-labelledby="context-title">
+    <div class="section-header"><div><h2 id="context-title">Context Intelligence</h2><p>Decision-Relevant Context Probe</p></div><span class="badge badge-info">Runtime context</span></div>
+    {% include "dashboard/components/context_probe.html" with probe=detail.probe %}
+</section>
+
+<section class="glass-panel detail-panel intervention-panel" aria-labelledby="intervention-title">
+    <div class="section-header"><div><h2 id="intervention-title">Selected Intervention</h2><p>Minimum-effective action under prototype assumptions</p></div><span class="badge badge-warning">Prototype policy assumptions</span></div>
+    {% include "dashboard/components/intervention_card.html" with intervention=detail.intervention review=detail.review %}
+</section>
+{% endblock %}

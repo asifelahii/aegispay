@@ -1,0 +1,11 @@
+{% if probe.asked %}
+    <div class="context-state"><span class="badge badge-info">Question acquired</span><span>Customer-provided context is shown separately from transaction evidence.</span></div>
+    <div class="context-question"><span class="detail-label">Question</span><p>{{ probe.question }}</p></div>
+    <div class="context-answer"><span class="detail-label">Answer</span><p>{{ probe.answer }}</p></div>
+    {% if probe.changed %}
+        <div class="context-impact"><span class="detail-label">Decision impact</span><strong>{{ probe.before_score }} → {{ probe.after_score }}</strong><span>{{ probe.before_action|title }} → {{ probe.after_action|title }}</span></div>
+    {% endif %}
+{% else %}
+    <div class="context-state"><span class="badge badge-success">No probe required</span></div>
+    <p class="context-no-probe">{{ probe.reason }}</p>
+{% endif %}

@@ -1,0 +1,29 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AegisPay prototype risk intelligence dashboard">
+    <title>{% block title %}AegisPay · Risk Overview{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/tokens.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-background" aria-hidden="true"></div>
+    <div class="app-shell">
+        {% include "dashboard/components/sidebar.html" %}
+        <div class="app-frame">
+            {% include "dashboard/components/topbar.html" %}
+            <main id="main-content" class="app-main" role="main">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    <script src="{% static 'dashboard/js/shell.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

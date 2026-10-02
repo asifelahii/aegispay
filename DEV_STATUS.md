@@ -495,6 +495,71 @@ behavior, or production economics.
 What additional evidence and governance are required before considering the
 canonical prototype policy for any non-synthetic evaluation?
 
+## UI Phase 1
+
+Approved visual direction: corporate fintech first, with restrained liquid
+glass treatment, macOS/iOS-inspired polish, high readability, and
+analyst-grade information density.
+
+Implemented the first dashboard shell at `/dashboard/` with:
+
+- reusable CSS custom-property tokens for color, spacing, radii, typography,
+  surfaces, and layout dimensions;
+- deep navy application background with restrained cyan/violet ambient light;
+- reusable glass panels, badges, metric cards, section headers, icons, tables,
+  risk legend items, and capacity components;
+- responsive sidebar navigation, compact top bar, prototype labeling, and
+  mobile off-canvas navigation;
+- synthetic/demo overview metrics, recent transactions, risk distribution,
+  intervention activity, and constrained human-review capacity.
+
+Static architecture is split across `dashboard/static/dashboard/css/` for
+tokens, base styles, components, and dashboard layout, with minimal shell
+interaction in `dashboard/static/dashboard/js/shell.js`. No external font,
+CSS framework, chart library, or frontend build pipeline was added.
+
+Dashboard-focused tests cover URL resolution, HTTP 200/template rendering,
+brand and heading content, prototype/synthetic labeling, all four metric
+labels, primary navigation, disabled future navigation, the semantic main
+landmark, review-capacity demo values, semantic transaction-table headers, and
+all expected shell static-asset references. The dashboard uses presentation
+context only; it does not query or mutate experiment artifacts and does not
+claim live production metrics.
+
+Current limitations: navigation destinations other than Overview are visible
+future states, search is a non-functional shell, values are synthetic demo
+data, and no charts, review actions, or customer-facing Context Probe workflow
+are implemented.
+
+## UI Phase 2: Transaction Detail & Explainability
+
+Added the namespaced prototype route `/dashboard/transactions/<transaction_id>/`
+(`dashboard:transaction_detail`) for deterministic analyst investigation of
+two demo transactions. A thin presenter constructs runtime
+`NormalizedTransaction` contracts and uses the existing rules engine,
+canonical Context Probe, context-risk adjuster, and intervention policy; it
+does not query artifacts or mutate persisted data.
+
+The detail screen includes transaction metadata, explainable risk score and
+reason contributions, behavioral intelligence, beneficiary-network indicators,
+Context Probe evidence, selected intervention reasoning, prototype cost
+assumptions, and a portfolio-level review-capacity note. The overview now
+links the supported demo transaction rows to this screen.
+
+Demo scenarios cover a decision-relevant support-impersonation probe with a
+positive answer that changes the action, and a critical transaction where
+existing evidence makes additional context unnecessary. Focused dashboard
+tests cover route/template/status behavior, risk and reason rendering,
+behavioral and network intelligence, both probe states, intervention
+assumption disclaimers, overview linking, and unknown-ID 404 behavior.
+
+Current limitations: demo transactions are presenter-defined, no database
+backed analyst workflow or review actions exist, network graph navigation is a
+disabled future state, and the page is not a customer payment or Context Probe
+interaction flow.
+
+Next UI task: **UI Phase 3: Customer Payment / Context Probe interaction flow**
+
 ## Future Backlog
 
 - Scenario-mix/prevalence sensitivity.

@@ -1,0 +1,7 @@
+<div class="section-header">
+    <div>
+        <h2 id="{{ title|slugify }}-title">{{ title }}</h2>
+        <p>{{ subtitle }}</p>
+    </div>
+    {% if action_label %}<button class="text-button" type="button" disabled>{{ action_label }} <span aria-hidden="true">→</span></button>{% endif %}
+</div>

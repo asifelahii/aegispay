@@ -1,0 +1,24 @@
+<div class="table-scroll">
+    <table class="transactions-table">
+        <thead>
+            <tr><th scope="col">Time</th><th scope="col">Amount</th><th scope="col">Risk</th><th scope="col">Status</th><th scope="col">Intervention</th></tr>
+        </thead>
+        <tbody>
+            {% for transaction in recent_transactions %}
+                <tr>
+                    <td class="table-time">
+                        {% if transaction.transaction_id %}
+                            <a href="{% url 'dashboard:transaction_detail' transaction.transaction_id %}">{{ transaction.time }}</a>
+                        {% else %}
+                            {{ transaction.time }}
+                        {% endif %}
+                    </td>
+                    <td class="table-amount">{{ transaction.amount }}</td>
+                    <td>{% include "dashboard/components/risk_badge.html" with label=transaction.risk tone=transaction.risk_tone %}</td>
+                    <td>{% include "dashboard/components/status_badge.html" with label=transaction.status tone=transaction.status_tone %}</td>
+                    <td class="table-intervention">{{ transaction.intervention }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

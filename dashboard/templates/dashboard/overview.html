@@ -1,0 +1,67 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div>
+        <p class="eyebrow">Prototype dashboard</p>
+        <h1>Risk Overview</h1>
+        <p class="page-intro">Monitor transaction risk, intervention activity, and review demand across the AegisPay prototype.</p>
+    </div>
+    <span class="badge badge-prototype">
+        <span class="status-dot" aria-hidden="true"></span>
+        Synthetic demo data
+    </span>
+</div>
+
+<section class="metric-grid" aria-label="Risk overview metrics">
+    {% for metric in metrics %}
+        {% include "dashboard/components/metric_card.html" with metric=metric %}
+    {% endfor %}
+</section>
+
+<div class="dashboard-grid dashboard-grid-primary">
+    <section class="glass-panel recent-panel" aria-labelledby="recent-transactions-title">
+        {% include "dashboard/components/section_header.html" with title="Recent Transactions" subtitle="Latest prototype activity" action_label="View all" %}
+        {% include "dashboard/components/recent_transactions.html" %}
+    </section>
+
+    <section class="glass-panel distribution-panel" aria-labelledby="risk-distribution-title">
+        {% include "dashboard/components/section_header.html" with title="Risk Distribution" subtitle="Synthetic benchmark population" %}
+        <div class="distribution-content">
+            <div class="risk-donut" aria-label="Risk distribution: 61 percent low, 23 percent medium, 11 percent high, 5 percent critical">
+                <div class="risk-donut-center">
+                    <strong>12.4K</strong>
+                    <span>total</span>
+                </div>
+            </div>
+            <div class="risk-legend">
+                {% for item in risk_distribution %}
+                    {% include "dashboard/components/risk_legend_item.html" with item=item %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="dashboard-grid dashboard-grid-secondary">
+    <section class="glass-panel activity-panel" aria-labelledby="intervention-activity-title">
+        {% include "dashboard/components/section_header.html" with title="Intervention Activity" subtitle="Minimum-effective policy mix" %}
+        <div class="bar-list">
+            {% for item in interventions %}
+                <div class="bar-row">
+                    <div class="bar-label">
+                        <span class="legend-swatch swatch-{{ item.tone }}" aria-hidden="true"></span>
+                        <span>{{ item.label }}</span>
+                        <strong>{{ item.count }}</strong>
+                    </div>
+                    <div class="progress-track" aria-label="{{ item.label }} {{ item.value }} percent">
+                        <span class="progress-fill fill-{{ item.tone }}" style="width: {{ item.value }}%"></span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% include "dashboard/components/review_capacity.html" %}
+</div>
+{% endblock %}

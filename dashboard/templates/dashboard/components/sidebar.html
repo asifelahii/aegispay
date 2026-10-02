@@ -1,0 +1,50 @@
+<aside class="sidebar" id="app-sidebar" aria-label="Primary navigation">
+    <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 36" role="img"><path d="M16 2 29 7v9c0 8.5-5.1 14.9-13 18C8.1 30.9 3 24.5 3 16V7l13-5Z"/><path d="m10 17 4 4 8-9"/></svg>
+        </div>
+        <div>
+            <strong>AegisPay</strong>
+            <span>Trust &amp; Risk Intelligence</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Dashboard sections">
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item is-active" href="{% url 'dashboard:overview' %}" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="grid" %}</span>
+            <span>Overview</span>
+        </a>
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="swap" %}</span>
+            <span>Transactions</span><span class="nav-soon">Soon</span>
+        </span>
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="inbox" %}</span>
+            <span>Review Queue</span><span class="nav-soon">Soon</span>
+        </span>
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="network" %}</span>
+            <span>Network Intelligence</span><span class="nav-soon">Soon</span>
+        </span>
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="flask" %}</span>
+            <span>Experiments</span><span class="nav-soon">Soon</span>
+        </span>
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="file" %}</span>
+            <span>Reports</span><span class="nav-soon">Soon</span>
+        </span>
+    </nav>
+
+    <div class="sidebar-footer">
+        <span class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="settings" %}</span>
+            <span>Settings</span><span class="nav-soon">Soon</span>
+        </span>
+        <div class="sidebar-footnote">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Prototype environment</span>
+        </div>
+    </div>
+</aside>

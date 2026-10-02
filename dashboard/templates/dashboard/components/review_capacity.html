@@ -1,0 +1,12 @@
+<section class="glass-panel capacity-panel" aria-labelledby="human-review-capacity-title">
+    {% include "dashboard/components/section_header.html" with title="Human Review Capacity" subtitle="Constrained operations control" %}
+    <div class="capacity-summary">
+        <strong>{{ review_capacity.allocated }} <span>/ {{ review_capacity.capacity }}</span></strong>
+        <span>allocated</span>
+    </div>
+    <div class="capacity-progress" aria-label="{{ review_capacity.percentage }} percent of human review capacity allocated">
+        <span style="width: {{ review_capacity.percentage }}%"></span>
+    </div>
+    <div class="capacity-footer"><span>{{ review_capacity.percentage }}% utilized</span><strong>{{ review_capacity.remaining }} slots remaining</strong></div>
+    <p class="panel-note">Demo allocation shown for the synthetic benchmark.</p>
+</section>

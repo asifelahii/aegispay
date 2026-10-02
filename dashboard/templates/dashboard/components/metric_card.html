@@ -1,0 +1,12 @@
+<article class="glass-panel metric-card">
+    <div class="metric-card-top">
+        <span class="metric-label">{{ metric.label }}</span>
+        <span class="metric-icon metric-icon-{{ metric.tone }}" aria-hidden="true">{% include "dashboard/components/icons.html" with icon=metric.icon %}</span>
+    </div>
+    <div class="metric-value">{{ metric.value }}</div>
+    <div class="metric-card-bottom">
+        <span class="metric-supporting">{{ metric.supporting }}</span>
+        <span class="metric-trend trend-{{ metric.tone }}">{{ metric.trend }}</span>
+    </div>
+    <span class="metric-trend-label">{{ metric.trend_label }}</span>
+</article>

@@ -1,0 +1,20 @@
+<header class="topbar">
+    <div class="topbar-leading">
+        <button class="icon-button sidebar-toggle" type="button" aria-label="Open navigation" aria-controls="app-sidebar" aria-expanded="false">
+            {% include "dashboard/components/icons.html" with icon="menu" %}
+        </button>
+        <div class="breadcrumbs">
+            <span>Workspace</span><span class="breadcrumb-separator">/</span><strong>Overview</strong>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <label class="search-shell">
+            <span class="sr-only">Search dashboard</span>
+            {% include "dashboard/components/icons.html" with icon="search" %}
+            <input type="search" placeholder="Search" aria-label="Search dashboard">
+            <kbd>⌘ K</kbd>
+        </label>
+        <span class="topbar-badge">Prototype</span>
+        <button class="avatar" type="button" aria-label="Open analyst profile">AR</button>
+    </div>
+</header>
