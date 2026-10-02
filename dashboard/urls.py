@@ -15,4 +15,5 @@ urlpatterns = [
     path("demo/payment/context/", views.payment_demo_context, name="payment_demo_context"),
     path("demo/payment/result/", views.payment_demo_result, name="payment_demo_result"),
     path("demo/payment/success/", views.payment_demo_success, name="payment_demo_success"),
+    path("network/", views.network_intelligence, name="network_intelligence"),
 ]

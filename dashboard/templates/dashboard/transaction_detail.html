@@ -77,7 +77,11 @@
                 {% include "dashboard/components/intelligence_metric.html" with label=label value=value highlighted=detail.network_reason_fired %}
             {% endfor %}
         </div>
-        <span class="future-action" aria-disabled="true">Open Network View · Soon</span>
+        {% if detail.network_reason_fired %}
+            <a class="future-action" href="{% url 'dashboard:network_intelligence' %}?scenario=high-risk">Open Network View</a>
+        {% else %}
+            <span class="future-action" aria-disabled="true">Open Network View · No demo graph for this transaction</span>
+        {% endif %}
     </section>
 </div>
 

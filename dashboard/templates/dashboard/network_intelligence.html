@@ -1,0 +1,80 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}AegisPay · Network Intelligence{% endblock %}
+{% block content %}
+<div class="dashboard-header network-header">
+    <div>
+        <p class="eyebrow">Recipient-centric relationship analysis</p>
+        <h1>Network Intelligence</h1>
+        <p class="page-intro">Inspect how value moves around a focal wallet using synthetic historical network evidence.</p>
+    </div>
+    <span class="badge badge-prototype"><span class="status-dot" aria-hidden="true"></span>Synthetic network demo</span>
+</div>
+
+<div class="network-controls">
+    <label for="network-scenario">Network Demo</label>
+    <select id="network-scenario" onchange="window.location.href='?scenario=' + encodeURIComponent(this.value)">
+        {% for key, label in scenario_options %}<option value="{{ key }}" {% if scenario.key == key %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <span>Prototype controls · not operational actions</span>
+</div>
+
+<div class="network-kpi-grid">
+    <div class="glass-panel network-kpi"><span>Connected wallets</span><strong>{{ graph.nodes|length }}</strong><small>Nodes in this synthetic view</small></div>
+    <div class="glass-panel network-kpi"><span>Inbound relationships</span><strong>{{ metrics.fan_in }}</strong><small>Weighted incoming transactions</small></div>
+    <div class="glass-panel network-kpi"><span>Outbound relationships</span><strong>{{ metrics.fan_out }}</strong><small>Weighted outgoing transactions</small></div>
+    <div class="glass-panel network-kpi"><span>24h observed value</span><strong>${{ metrics.observed_value|floatformat:0 }}</strong><small>Incoming plus outgoing event value</small></div>
+</div>
+
+<div class="network-main-grid">
+    <section class="glass-panel network-graph-panel" aria-labelledby="network-graph-title">
+        <div class="section-header"><div><h2 id="network-graph-title">Relationship Graph</h2><p>Directed synthetic transaction history · select a node to inspect it</p></div></div>
+        <div class="network-graph-wrap">
+            <svg id="network-graph" class="network-graph" viewBox="0 0 820 500" role="img" aria-labelledby="network-graph-title network-graph-description">
+                <desc id="network-graph-description">A directed graph showing senders, the focal recipient, downstream wallets, and cash-out endpoints.</desc>
+                <defs><marker id="network-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>
+                <g id="network-edges"></g><g id="network-nodes"></g>
+            </svg>
+        </div>
+        <div class="network-summary" aria-label="Textual network summary">
+            <strong>{{ scenario.focal_wallet }}</strong> is the focal recipient. {{ summary }}
+            {% if network_concern %}These indicators increase network-related concern under the current AegisPay prototype rules; they do not prove that the wallet is fraudulent.{% else %}This is lower network concern in this synthetic example, not a claim that the wallet is safe.{% endif %}
+        </div>
+        <div class="network-legend">
+            <span><i class="legend-node legend-focal"></i> Focal recipient</span><span><i class="legend-node legend-sender"></i> Sender</span><span><i class="legend-node legend-downstream"></i> Downstream wallet</span><span><i class="legend-node legend-cashout"></i> Cash-out endpoint</span><span><i class="legend-line"></i> Risk-relevant path</span>
+        </div>
+    </section>
+
+    <aside class="glass-panel focal-panel" aria-labelledby="focal-wallet-title">
+        <div class="section-header"><div><h2 id="focal-wallet-title">Focal Wallet</h2><p>{{ scenario.observation_window }}</p></div></div>
+        <strong class="focal-wallet-id">{{ scenario.focal_wallet }}</strong>
+        <div class="signal-list">
+            <div class="signal-card{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %} signal-risk{% endif %}"><span>Unique senders 24h</span><strong>{{ metrics.unique_senders }}</strong><small>Distinct wallets that sent value to the focal recipient during the 24-hour historical window.</small>{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %}<em>Contributed to current rules-based assessment</em>{% endif %}</div>
+            <div class="signal-card{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %} signal-risk{% endif %}"><span>Fan-in 24h</span><strong>{{ metrics.fan_in }}</strong><small>Weighted incoming transaction count from the directed transaction graph.</small>{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %}<em>HIGH_RECIPIENT_FAN_IN</em>{% endif %}</div>
+            <div class="signal-card"><span>Fan-out 24h</span><strong>{{ metrics.fan_out }}</strong><small>Weighted outgoing transaction count from the directed transaction graph.</small></div>
+            <div class="signal-card{% if 'HIGH_PASS_THROUGH' in risk_reasons %} signal-risk{% endif %}"><span>Pass-through ratio</span><strong>{{ metrics.pass_through_ratio|floatformat:0 }}%</strong><small>Outgoing value / incoming value over the historical 24-hour window, capped at 100%.</small>{% if 'HIGH_PASS_THROUGH' in risk_reasons %}<em>HIGH_PASS_THROUGH</em>{% endif %}</div>
+            <div class="signal-card{% if 'RAPID_CASHOUT' in risk_reasons %} signal-risk{% endif %}"><span>Cash-out velocity 1h</span><strong>{{ metrics.cashout_velocity|floatformat:0 }}%</strong><small>Share of observed incoming value represented by cash-out activity during the historical 1-hour window, capped at 100%.</small>{% if 'RAPID_CASHOUT' in risk_reasons %}<em>RAPID_CASHOUT</em>{% endif %}</div>
+        </div>
+    </aside>
+</div>
+
+<section class="glass-panel network-explanation" aria-labelledby="network-signals-title">
+    <div class="section-header"><div><h2 id="network-signals-title">Network Signals / Explanation</h2><p>Rules-based network evidence, not a fraud verdict</p></div></div>
+    <p><strong>Why this network stands out</strong></p>
+    <p>{{ summary }}</p>
+    <p>These indicators increase network-related concern under the current AegisPay prototype rules. They do not prove that the wallet is fraudulent.</p>
+</section>
+
+<div class="network-lower-grid">
+    <section class="glass-panel event-panel" aria-labelledby="event-table-title">
+        <div class="section-header"><div><h2 id="event-table-title">Representative Transaction Flow</h2><p>Selected events from the same synthetic graph data</p></div></div>
+        <div class="table-scroll"><table class="transactions-table network-events"><thead><tr><th scope="col">Time</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Amount</th></tr></thead><tbody>{% for event in events|slice:":12" %}<tr class="{% if event.recipient == scenario.focal_wallet %}event-inbound{% elif event.transaction_type == 'CASH_OUT' %}event-cashout{% else %}event-outbound{% endif %}"><td>{{ event.time }}</td><td>{{ event.sender }}</td><td>{{ event.recipient }}</td><td>{{ event.transaction_type }}</td><td>${{ event.amount|floatformat:2 }}</td></tr>{% endfor %}</tbody></table></div>
+    </section>
+    <aside class="glass-panel node-inspector" aria-labelledby="node-inspector-title">
+        <div class="section-header"><div><h2 id="node-inspector-title">Selected Node</h2><p>Keyboard and pointer selection</p></div></div>
+        <div id="node-inspector-content"><strong>{{ scenario.focal_wallet }}</strong><p>Focal recipient</p><p>Select a node in the graph to inspect its relationship and event totals.</p></div>
+    </aside>
+</div>
+{{ graph|json_script:"network-graph-data" }}
+{% endblock %}
+{% block extra_js %}<script src="{% static 'dashboard/js/network_graph.js' %}"></script>{% endblock %}

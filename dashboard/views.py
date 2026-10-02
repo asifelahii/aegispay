@@ -6,6 +6,7 @@ from .presenters.payment_demo import (
     evaluate_payment,
     present_customer_decision,
 )
+from .presenters.network_intelligence import present_network
 from .presenters.transaction_detail import present_transaction_detail
 
 
@@ -120,6 +121,7 @@ def overview(request):
             "percentage": 70,
         },
     }
+    context["active_section"] = "overview"
     return render(request, "dashboard/overview.html", context)
 
 
@@ -133,6 +135,13 @@ def transaction_detail(request, transaction_id):
         "dashboard/transaction_detail.html",
         {"detail": detail},
     )
+
+
+def network_intelligence(request):
+    scenario = request.GET.get("scenario", "high-risk")
+    context = present_network(scenario)
+    context["active_section"] = "network"
+    return render(request, "dashboard/network_intelligence.html", context)
 
 
 def payment_demo(request):

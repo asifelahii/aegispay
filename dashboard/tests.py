@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from core.contracts import ScamContext
 from dashboard.presenters.payment_demo import context_for_answer
+from dashboard.presenters.network_intelligence import present_network
 
 class DashboardOverviewTests(SimpleTestCase):
     def get_dashboard(self):
@@ -348,3 +349,114 @@ class CustomerPaymentDemoTests(SimpleTestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+
+class NetworkIntelligenceTests(SimpleTestCase):
+    def get_network(self, scenario=None):
+        url = reverse("dashboard:network_intelligence")
+        if scenario:
+            url += f"?scenario={scenario}"
+        return self.client.get(url)
+
+    def test_network_route_and_template_render(self):
+        response = self.get_network()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "dashboard/network_intelligence.html",
+        )
+        self.assertContains(response, "Synthetic network demo")
+
+    def test_default_and_alternate_scenarios_render(self):
+        self.assertContains(self.get_network(), "WLT-FOCAL")
+        self.assertContains(
+            self.get_network("concentrated"),
+            "WLT-ALPHA",
+        )
+
+    def test_invalid_scenario_falls_back_safely(self):
+        response = self.get_network("not-a-scenario")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "WLT-FOCAL")
+
+    def test_canonical_network_metrics_render(self):
+        response = self.get_network()
+
+        for label in (
+            "Unique senders 24h",
+            "Fan-in 24h",
+            "Fan-out 24h",
+            "Pass-through ratio",
+            "Cash-out velocity 1h",
+        ):
+            with self.subTest(label=label):
+                self.assertContains(response, label)
+
+    def test_high_risk_explanation_and_disclaimer_render(self):
+        response = self.get_network()
+
+        self.assertContains(response, "These indicators increase network-related concern")
+        self.assertContains(response, "do not prove that the wallet is fraudulent")
+        self.assertContains(response, "HIGH_RECIPIENT_FAN_IN")
+        self.assertContains(response, "HIGH_PASS_THROUGH")
+        self.assertContains(response, "RAPID_CASHOUT")
+
+    def test_concentrated_scenario_does_not_claim_safe(self):
+        response = self.get_network("concentrated")
+
+        self.assertContains(response, "lower network concern")
+        self.assertContains(response, "not a claim that the wallet is safe")
+        self.assertContains(response, "not a claim that the wallet is safe")
+
+    def test_event_table_graph_payload_and_assets_render(self):
+        response = self.get_network()
+
+        self.assertContains(response, "Representative Transaction Flow")
+        self.assertContains(response, 'id="network-graph-data"')
+        self.assertContains(response, "dashboard/js/network_graph.js")
+        self.assertContains(response, "dashboard/css/dashboard.css")
+
+    def test_sidebar_network_item_is_active(self):
+        response = self.get_network()
+
+        self.assertContains(
+            response,
+            'href="/dashboard/network/" aria-current="page"',
+        )
+        self.assertNotContains(
+            response,
+            'href="/dashboard/" aria-current="page"',
+        )
+
+    def test_presenter_is_deterministic_and_metrics_match_events(self):
+        first = present_network("high-risk")
+        second = present_network("high-risk")
+
+        self.assertEqual(first["graph"], second["graph"])
+        self.assertEqual(first["metrics"]["fan_in"], 24)
+        self.assertEqual(first["metrics"]["fan_out"], 13)
+        self.assertEqual(first["metrics"]["unique_senders"], 8)
+        self.assertEqual(first["metrics"]["pass_through_ratio"], 0.86)
+        self.assertEqual(first["metrics"]["cashout_velocity"], 0.78)
+        self.assertEqual(
+            first["metrics"]["fan_in"],
+            sum(
+                event.recipient == first["scenario"].focal_wallet
+                for event in first["events"]
+            ),
+        )
+
+    def test_transaction_detail_network_link_is_functional_for_supported_demo(self):
+        response = self.client.get(
+            reverse(
+                "dashboard:transaction_detail",
+                args=["TX-8420"],
+            )
+        )
+
+        self.assertContains(
+            response,
+            reverse("dashboard:network_intelligence") + "?scenario=high-risk",
+        )

@@ -11,7 +11,7 @@
 
     <nav class="sidebar-nav" aria-label="Dashboard sections">
         <p class="nav-label">Workspace</p>
-        <a class="nav-item is-active" href="{% url 'dashboard:overview' %}" aria-current="page">
+        <a class="nav-item{% if active_section == 'overview' %} is-active{% endif %}" href="{% url 'dashboard:overview' %}"{% if active_section == 'overview' %} aria-current="page"{% endif %}>
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="grid" %}</span>
             <span>Overview</span>
         </a>
@@ -23,10 +23,10 @@
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="inbox" %}</span>
             <span>Review Queue</span><span class="nav-soon">Soon</span>
         </span>
-        <span class="nav-item nav-item-disabled" aria-disabled="true">
+        <a class="nav-item{% if active_section == 'network' %} is-active{% endif %}" href="{% url 'dashboard:network_intelligence' %}"{% if active_section == 'network' %} aria-current="page"{% endif %}>
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="network" %}</span>
-            <span>Network Intelligence</span><span class="nav-soon">Soon</span>
-        </span>
+            <span>Network Intelligence</span>
+        </a>
         <span class="nav-item nav-item-disabled" aria-disabled="true">
             <span class="nav-icon" aria-hidden="true">{% include "dashboard/components/icons.html" with icon="flask" %}</span>
             <span>Experiments</span><span class="nav-soon">Soon</span>

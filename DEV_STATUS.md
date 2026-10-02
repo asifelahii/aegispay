@@ -558,7 +558,7 @@ backed analyst workflow or review actions exist, network graph navigation is a
 disabled future state, and the page is not a customer payment or Context Probe
 interaction flow.
 
-Next UI task: **UI Phase 3: Customer Payment / Context Probe interaction flow**
+Previous UI task: **UI Phase 3: Customer Payment / Context Probe interaction flow**
 
 ## UI Phase 3: Customer Payment + Context Probe Flow
 
@@ -592,7 +592,40 @@ processor; customer state is submitted through validated form fields rather
 than persisted workflow state; and no real authentication, transaction
 execution, or production payment integration exists.
 
-Next UI task: **UI Phase 4: Network Intelligence Visualization**
+## UI Phase 4: Network Intelligence Visualization
+
+Added the namespaced analyst route `/dashboard/network/`
+(`dashboard:network_intelligence`) and made the sidebar Network Intelligence
+item functional and active on that page. The transaction-detail network action
+now links the supported network-backed demo transaction to the high-risk
+network scenario; unsupported detail transactions retain an honest disabled
+state.
+
+The page uses a deterministic presenter with two synthetic scenarios:
+concentrated activity and high fan-in/pass-through activity. Graph nodes,
+directed edges, representative event rows, focal-wallet metrics, and textual
+explanations are all derived from the same presenter event data. Native SVG and
+repository-owned JavaScript provide deterministic graph rendering, arrowheads,
+keyboard/pointer node selection, selected-edge highlighting, and a node
+inspector without business logic in JavaScript.
+
+The visualized canonical network features preserve existing runtime meanings:
+unique senders, weighted fan-in, weighted fan-out, capped outgoing/incoming
+pass-through ratio, and capped cash-out/incoming velocity. Existing
+`RulesRiskEngine` assessment is used only to identify already-defined network
+reason codes; no thresholds or network calculations were changed.
+
+Focused dashboard tests cover routes, scenarios, safe invalid-scenario
+handling, metric rendering, graph payload and asset references, disclaimer
+language, active navigation, presenter determinism/metric consistency, and
+transaction-detail integration. Existing network tests remain passing.
+
+Current limitations: graph data is deterministic synthetic presentation data,
+the node inspector is client-side display only, no production graph database or
+analyst enforcement action exists, and no graph model or new detection logic
+was added.
+
+Next UI task: **UI Phase 5: Experiment Evidence & Validation Dashboard**
 
 ## Future Backlog
 
