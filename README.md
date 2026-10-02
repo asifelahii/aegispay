@@ -300,6 +300,37 @@ python manage.py runserver
 Open `http://127.0.0.1:8000/`. The repository was validated with the project
 virtual environment using `.venv/bin/python`.
 
+## Temporary Render Deployment
+
+This repository can be deployed temporarily as a single Render Web Service.
+The service uses the existing Django WSGI application and SQLite for the
+hackathon demo.
+
+- **Build command:** `./build.sh`
+- **Start command:** `gunicorn config.wsgi:application`
+- **Configured environment variables:** Render-generated `SECRET_KEY` and
+  `DEBUG=False`
+
+The Django settings automatically consume Render's
+`RENDER_EXTERNAL_HOSTNAME` and `RENDER_EXTERNAL_URL` values for host
+validation and HTTPS CSRF trusted origins. No hostname copy or manual
+redeploy step is required.
+
+To deploy:
+
+1. Push the repository to GitHub.
+2. In Render, choose **New → Blueprint**.
+3. Connect `asifelahii/aegispay`.
+4. Apply the Blueprint.
+5. Wait for the deployment to complete.
+6. Open the generated `.onrender.com` URL.
+
+Render generates `SECRET_KEY` through the blueprint; do not replace it with a
+committed value.
+
+SQLite is intentionally temporary and ephemeral for this public demo. A
+proper deployment should move durable data to PostgreSQL later.
+
 ## Testing
 
 ```bash
