@@ -1,0 +1,22 @@
+{% extends "dashboard/customer/base.html" %}
+{% block content %}
+<section class="payment-card" aria-labelledby="security-title">
+    <p class="customer-eyebrow">One quick check</p>
+    <h1 id="security-title">Security check</h1>
+    <p class="customer-intro">We ask only when the answer can materially affect the safety decision.</p>
+    <form method="post" action="{% url 'dashboard:payment_demo_context' %}" class="customer-form">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        <fieldset class="question-field">
+            <legend>{{ question.prompt }}</legend>
+            <div class="answer-options">
+                {% for choice in form.answer %}
+                    <label class="answer-option">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        {% for error in form.answer.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        <button class="customer-button" type="submit">Continue securely</button>
+    </form>
+</section>
+{% endblock %}

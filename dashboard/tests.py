@@ -1,6 +1,8 @@
 from django.test import SimpleTestCase
 from django.urls import reverse
 
+from core.contracts import ScamContext
+from dashboard.presenters.payment_demo import context_for_answer
 
 class DashboardOverviewTests(SimpleTestCase):
     def get_dashboard(self):
@@ -173,3 +175,176 @@ class TransactionDetailTests(SimpleTestCase):
             self.get_detail("TX-unknown").status_code,
             404,
         )
+
+
+class CustomerPaymentDemoTests(SimpleTestCase):
+    def payment_url(self, name="dashboard:payment_demo"):
+        return reverse(name)
+
+    def payment_data(self, scenario="normal"):
+        return {
+            "scenario": scenario,
+            "recipient": "Ali Khan",
+            "amount": "5000.00",
+            "note": "Rent payment",
+        }
+
+    def test_payment_demo_route_and_template_render(self):
+        response = self.client.get(self.payment_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "dashboard/customer/payment.html",
+        )
+        self.assertContains(response, "Prototype Demo Controls")
+        self.assertContains(response, "No real money is transferred")
+
+    def test_payment_demo_url_resolves(self):
+        self.assertEqual(
+            self.payment_url(),
+            "/dashboard/demo/payment/",
+        )
+
+    def test_invalid_amount_is_rejected(self):
+        data = self.payment_data()
+        data["amount"] = "0"
+
+        response = self.client.post(self.payment_url(), data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ensure this value is greater than or equal to")
+
+    def test_unknown_scenario_is_rejected(self):
+        response = self.client.post(
+            self.payment_url(),
+            self.payment_data("unknown"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a valid choice")
+
+    def test_normal_scenario_reaches_allow_without_probe(self):
+        response = self.client.post(
+            self.payment_url(),
+            self.payment_data(),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "dashboard/customer/intervention.html",
+        )
+        self.assertContains(response, "Ready to continue")
+        self.assertContains(response, "No additional security check is required")
+        self.assertNotContains(response, "Risk score")
+
+    def test_normal_confirmation_renders_simulated_success(self):
+        response = self.client.post(
+            reverse("dashboard:payment_demo_success"),
+            self.payment_data(),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "dashboard/customer/success.html",
+        )
+        self.assertContains(response, "Payment Demo Complete")
+        self.assertContains(response, "No real money was transferred")
+
+    def test_guided_scenario_renders_exact_runtime_question(self):
+        response = self.client.post(
+            self.payment_url(),
+            self.payment_data("guided"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "dashboard/customer/context_probe.html",
+        )
+        self.assertContains(response, "Does the recipient or person guiding")
+        self.assertContains(response, "financial institution?")
+
+    def test_guided_yes_recomputes_to_human_review(self):
+        data = self.payment_data("guided")
+        data.update(
+            {
+                "answer_key": "support_impersonation",
+                "answer": "yes",
+            }
+        )
+
+        response = self.client.post(
+            reverse("dashboard:payment_demo_context"),
+            data,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Additional review recommended")
+        self.assertContains(response, "AegisPay recommends human review")
+
+    def test_guided_no_recomputes_to_verify_without_fake_risk_reduction(self):
+        data = self.payment_data("guided")
+        data.update(
+            {
+                "answer_key": "support_impersonation",
+                "answer": "no",
+            }
+        )
+
+        response = self.client.post(
+            reverse("dashboard:payment_demo_context"),
+            data,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please verify before continuing")
+        self.assertNotContains(response, "Additional review recommended")
+
+    def test_context_answer_populates_only_selected_field(self):
+        context = context_for_answer("support_impersonation", "yes")
+
+        self.assertEqual(context.support_impersonation, True)
+        for field in ScamContext.__dataclass_fields__:
+            if field != "support_impersonation":
+                self.assertIsNone(getattr(context, field))
+
+    def test_inconsistent_context_question_fails_safely(self):
+        data = self.payment_data("guided")
+        data.update(
+            {
+                "answer_key": "phone_call",
+                "answer": "yes",
+            }
+        )
+
+        response = self.client.post(
+            reverse("dashboard:payment_demo_context"),
+            data,
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertContains(
+            response,
+            "does not belong to the selected payment",
+            status_code=400,
+        )
+
+    def test_strong_evidence_skips_probe_and_recommends_review(self):
+        response = self.client.post(
+            self.payment_url(),
+            self.payment_data("strong"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Additional review recommended")
+        self.assertNotContains(response, "Security check")
+
+    def test_invalid_flow_state_does_not_execute_payment(self):
+        response = self.client.get(
+            reverse("dashboard:payment_demo_result")
+        )
+
+        self.assertEqual(response.status_code, 404)

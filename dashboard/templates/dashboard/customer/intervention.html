@@ -1,0 +1,24 @@
+{% extends "dashboard/customer/base.html" %}
+{% block content %}
+<section class="payment-card result-card" aria-labelledby="intervention-title">
+    <div class="result-icon result-{{ decision.action|lower }}" aria-hidden="true">!</div>
+    <p class="customer-eyebrow">AegisPay protection</p>
+    <h1 id="intervention-title">{{ decision.heading }}</h1>
+    <p class="result-message">{{ decision.message }}</p>
+    <p class="result-detail">{{ decision.detail }}</p>
+    <div class="payment-summary"><span>{{ decision.amount }} to {{ decision.recipient }}</span>{% if decision.note %}<small>{{ decision.note }}</small>{% endif %}</div>
+    {% if decision.can_confirm %}
+        <form method="post" action="{% url 'dashboard:payment_demo_success' %}">
+            {% csrf_token %}
+            <input type="hidden" name="scenario" value="{{ decision.scenario }}">
+            <input type="hidden" name="recipient" value="{{ decision.recipient }}">
+            <input type="hidden" name="amount" value="{{ decision.amount }}">
+            <input type="hidden" name="note" value="{{ decision.note }}">
+            <button class="customer-button" type="submit">Confirm payment</button>
+        </form>
+    {% else %}
+        <a class="secondary-button" href="{% url 'dashboard:payment_demo' %}">Start another demo</a>
+    {% endif %}
+    <p class="prototype-note">Prototype simulation only. No payment has been executed.</p>
+</section>
+{% endblock %}

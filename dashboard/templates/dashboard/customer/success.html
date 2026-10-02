@@ -1,0 +1,17 @@
+{% extends "dashboard/customer/base.html" %}
+{% block content %}
+<section class="payment-card result-card" aria-labelledby="success-title">
+    <div class="result-icon result-allow" aria-hidden="true">✓</div>
+    <p class="customer-eyebrow">Payment Demo Complete</p>
+    <h1 id="success-title">Payment can continue</h1>
+    <p class="result-message">{{ decision.amount }} to {{ decision.recipient }}</p>
+    <p class="result-detail">This prototype simulated the decision without transferring real money.</p>
+    <div class="result-actions">
+        {% if decision.has_analyst_explanation %}
+            <a class="customer-button" href="{% url 'dashboard:transaction_detail' decision.transaction_id %}">View analyst explanation</a>
+        {% endif %}
+        <a class="secondary-button" href="{% url 'dashboard:payment_demo' %}">Start another demo</a>
+    </div>
+    <p class="prototype-note">Prototype simulation only. No real money was transferred.</p>
+</section>
+{% endblock %}

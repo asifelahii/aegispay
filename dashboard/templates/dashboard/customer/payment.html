@@ -1,0 +1,41 @@
+{% extends "dashboard/customer/base.html" %}
+{% block content %}
+<div class="customer-layout">
+    <section class="payment-card" aria-labelledby="payment-title">
+        <p class="customer-eyebrow">Send money</p>
+        <h1 id="payment-title">Make a payment</h1>
+        <p class="customer-intro">AegisPay checks only what is needed to help keep your payment safe.</p>
+        {% if flow_error %}<p class="form-error" role="alert">{{ flow_error }}</p>{% endif %}
+        <form method="post" action="{% url 'dashboard:payment_demo' %}" id="payment-form" class="customer-form">
+            {% csrf_token %}
+            <div class="field">
+                <label for="{{ form.recipient.id_for_label }}">To</label>
+                {{ form.recipient }}
+                {% for error in form.recipient.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+            </div>
+            <div class="field">
+                <label for="{{ form.amount.id_for_label }}">Amount</label>
+                <div class="amount-input"><span>৳</span>{{ form.amount }}</div>
+                {% for error in form.amount.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+            </div>
+            <div class="field">
+                <label for="{{ form.note.id_for_label }}">Note <span>(optional)</span></label>
+                {{ form.note }}
+            </div>
+            <button class="customer-button" type="submit">Continue</button>
+        </form>
+    </section>
+    <aside class="demo-controls" aria-label="Prototype Demo Controls">
+        <span class="control-label">Prototype Demo Controls</span>
+        <p>Choose a deterministic scenario for the demonstration.</p>
+        <label class="scenario-select" for="demo-scenario">Scenario</label>
+        <select id="demo-scenario" name="scenario" form="payment-form">
+            {% for value, label in form.scenario.field.choices %}
+                <option value="{{ value }}" {% if form.scenario.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        {% for error in form.scenario.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        <p class="control-note">The scenario is submitted with the payment form; these controls are intentionally outside the customer card.</p>
+    </aside>
+</div>
+{% endblock %}

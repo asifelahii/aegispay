@@ -1,0 +1,21 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}AegisPay · Send Money{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/tokens.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/customer.css' %}">
+</head>
+<body class="customer-body">
+    <main class="customer-page">
+        <div class="customer-brand"><span class="customer-mark" aria-hidden="true">A</span><strong>AegisPay</strong><span>Secure payment demo</span></div>
+        <div class="customer-progress" aria-label="Payment progress">
+            <span class="is-current">Payment</span><span>Security</span><span>Result</span>
+        </div>
+        {% block content %}{% endblock %}
+        <p class="customer-footnote">Prototype demonstration only · No real money is transferred</p>
+    </main>
+</body>
+</html>

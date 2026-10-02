@@ -560,6 +560,40 @@ interaction flow.
 
 Next UI task: **UI Phase 3: Customer Payment / Context Probe interaction flow**
 
+## UI Phase 3: Customer Payment + Context Probe Flow
+
+Added the separate customer-demo route `/dashboard/demo/payment/` with named
+routes for payment submission, Context Probe answers, intervention results, and
+simulated confirmation. The customer experience uses a lighter frosted
+payment surface while reusing AegisPay tokens and remains visually separate
+from the dark analyst shell.
+
+The flow uses Django forms and a thin presenter around the canonical runtime
+rules engine, decision-relevant Context Probe, context-risk adjustment, and
+minimum-effective intervention policy. It includes deterministic normal,
+guided/impersonation-risk, and strong-existing-evidence scenarios. The guided
+scenario renders the exact runtime-selected question, submits only the
+selected `ScamContext` field, and recomputes positive and negative answers
+server-side.
+
+Customer-facing intervention messages intentionally hide raw scores, internal
+weights, network metrics, and modeled costs. Allow and contextual-warning
+paths can reach simulated confirmation; stronger actions remain protected
+states. No payment execution, persistence, balance mutation, or analyst
+workflow was added.
+
+Focused dashboard tests cover route and template rendering, form validation,
+normal no-probe behavior, simulated success, exact Context Probe selection,
+positive and negative answer recomputation, selected-field integrity,
+strong-evidence behavior, and invalid-flow handling.
+
+Current limitations: this is a deterministic hackathon demo, not a payment
+processor; customer state is submitted through validated form fields rather
+than persisted workflow state; and no real authentication, transaction
+execution, or production payment integration exists.
+
+Next UI task: **UI Phase 4: Network Intelligence Visualization**
+
 ## Future Backlog
 
 - Scenario-mix/prevalence sensitivity.
