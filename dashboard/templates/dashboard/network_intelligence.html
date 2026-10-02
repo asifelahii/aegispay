@@ -53,8 +53,12 @@
             <div class="signal-card{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %} signal-risk{% endif %}"><span>Unique senders 24h</span><strong>{{ metrics.unique_senders }}</strong><small>Distinct wallets that sent value to the focal recipient during the 24-hour historical window.</small>{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %}<em>Contributed to current rules-based assessment</em>{% endif %}</div>
             <div class="signal-card{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %} signal-risk{% endif %}"><span>Fan-in 24h</span><strong>{{ metrics.fan_in }}</strong><small>Weighted incoming transaction count from the directed transaction graph.</small>{% if 'HIGH_RECIPIENT_FAN_IN' in risk_reasons %}<em>HIGH_RECIPIENT_FAN_IN</em>{% endif %}</div>
             <div class="signal-card"><span>Fan-out 24h</span><strong>{{ metrics.fan_out }}</strong><small>Weighted outgoing transaction count from the directed transaction graph.</small></div>
-            <div class="signal-card{% if 'HIGH_PASS_THROUGH' in risk_reasons %} signal-risk{% endif %}"><span>Pass-through ratio</span><strong>{{ metrics.pass_through_ratio|floatformat:0 }}%</strong><small>Outgoing value / incoming value over the historical 24-hour window, capped at 100%.</small>{% if 'HIGH_PASS_THROUGH' in risk_reasons %}<em>HIGH_PASS_THROUGH</em>{% endif %}</div>
-            <div class="signal-card{% if 'RAPID_CASHOUT' in risk_reasons %} signal-risk{% endif %}"><span>Cash-out velocity 1h</span><strong>{{ metrics.cashout_velocity|floatformat:0 }}%</strong><small>Share of observed incoming value represented by cash-out activity during the historical 1-hour window, capped at 100%.</small>{% if 'RAPID_CASHOUT' in risk_reasons %}<em>RAPID_CASHOUT</em>{% endif %}</div>
+            <div class="signal-card{% if 'HIGH_PASS_THROUGH' in risk_reasons %} signal-risk{% endif %}"><span>Pass-through ratio</span><strong>{{ metric_display.pass_through_percent }}</strong><small>Outgoing value / incoming value over the historical 24-hour window, capped at 100%.</small>{% if 'HIGH_PASS_THROUGH' in risk_reasons %}<em>HIGH_PASS_THROUGH</em>{% endif %}</div>
+            <div class="signal-card{% if 'RAPID_CASHOUT' in risk_reasons %} signal-risk{% endif %}"><span>Cash-out velocity 1h</span><strong>{{ metric_display.cashout_percent }}</strong><small>Share of observed incoming value represented by cash-out activity during the historical 1-hour window, capped at 100%.</small>{% if 'RAPID_CASHOUT' in risk_reasons %}<em>RAPID_CASHOUT</em>{% endif %}</div>
+        </div>
+        <div class="node-inspector focal-node-inspector" aria-labelledby="node-inspector-title">
+            <div class="section-header"><div><h2 id="node-inspector-title">Selected Node</h2><p>Keyboard and pointer selection</p></div></div>
+            <div id="node-inspector-content"><strong>{{ scenario.focal_wallet }}</strong><p>Focal recipient</p><p>Select a node in the graph to inspect its relationship and event totals.</p></div>
         </div>
     </aside>
 </div>
@@ -71,10 +75,6 @@
         <div class="section-header"><div><h2 id="event-table-title">Representative Transaction Flow</h2><p>Selected events from the same synthetic graph data</p></div></div>
         <div class="table-scroll"><table class="transactions-table network-events"><thead><tr><th scope="col">Time</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Amount</th></tr></thead><tbody>{% for event in events|slice:":12" %}<tr class="{% if event.recipient == scenario.focal_wallet %}event-inbound{% elif event.transaction_type == 'CASH_OUT' %}event-cashout{% else %}event-outbound{% endif %}"><td>{{ event.time }}</td><td>{{ event.sender }}</td><td>{{ event.recipient }}</td><td>{{ event.transaction_type }}</td><td>{{ event.amount|floatformat:2 }} value units</td></tr>{% endfor %}</tbody></table></div>
     </section>
-    <aside class="glass-panel node-inspector" aria-labelledby="node-inspector-title">
-        <div class="section-header"><div><h2 id="node-inspector-title">Selected Node</h2><p>Keyboard and pointer selection</p></div></div>
-        <div id="node-inspector-content"><strong>{{ scenario.focal_wallet }}</strong><p>Focal recipient</p><p>Select a node in the graph to inspect its relationship and event totals.</p></div>
-    </aside>
 </div>
 {{ graph|json_script:"network-graph-data" }}
 {% endblock %}

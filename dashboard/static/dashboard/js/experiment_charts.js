@@ -55,7 +55,7 @@
     lines.appendChild(path);
     series.values.forEach((value, index) => {
       const circle = document.createElementNS(ns, "circle");
-      circle.setAttribute("class", series.className);
+      circle.setAttribute("class", `${series.className} chart-point`);
       circle.setAttribute("cx", x(index));
       circle.setAttribute("cy", y(value));
       circle.setAttribute("r", "4");

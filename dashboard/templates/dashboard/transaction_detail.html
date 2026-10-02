@@ -78,9 +78,9 @@
             {% endfor %}
         </div>
         {% if detail.network_reason_fired %}
-            <a class="future-action" href="{% url 'dashboard:network_intelligence' %}?scenario=high-risk">Inspect Recipient Network</a>
+            <a class="secondary-action detail-cta" href="{% url 'dashboard:network_intelligence' %}?scenario=high-risk">Inspect Recipient Network →</a>
         {% else %}
-            <span class="future-action" aria-disabled="true">Inspect Recipient Network · No demo graph for this transaction</span>
+            <span class="secondary-action detail-cta is-disabled" aria-disabled="true">Inspect Recipient Network · No demo graph for this transaction</span>
         {% endif %}
     </section>
 </div>
@@ -95,6 +95,6 @@
     {% include "dashboard/components/intervention_card.html" with intervention=detail.intervention review=detail.review %}
 </section>
 <div class="detail-secondary-links">
-    <a href="{% url 'dashboard:experiment_evidence' %}">How was this policy validated?</a>
+    <a class="secondary-action detail-cta" href="{% url 'dashboard:experiment_evidence' %}">View Validation Evidence →</a>
 </div>
 {% endblock %}

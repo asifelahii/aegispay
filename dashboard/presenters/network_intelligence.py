@@ -217,6 +217,10 @@ def present_network(scenario_key: str = "high-risk") -> dict:
             (key, value.label) for key, value in SCENARIOS.items()
         ),
         "metrics": metrics,
+        "metric_display": {
+            "pass_through_percent": f"{metrics['pass_through_ratio']:.0%}",
+            "cashout_percent": f"{metrics['cashout_velocity']:.0%}",
+        },
         "risk_reasons": risk_reasons,
         "graph": _graph_payload(scenario),
         "events": _scenario_events(scenario),

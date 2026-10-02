@@ -44,13 +44,21 @@ class DashboardOverviewIntroTests(SimpleTestCase):
         response = self.get_dashboard()
 
         for label in (
-            "Transactions Analyzed",
-            "Flagged / Review Queue",
-            "Simulated Protected Value",
-            "Intervention Rate",
+            "Transactions Evaluated",
+            "Context Probe Rate",
+            "Simulated Prevention",
+            "Human Review Capacity",
         ):
             with self.subTest(label=label):
                 self.assertContains(response, label)
+
+    def test_overview_kpis_match_cached_reference_evidence(self):
+        response = self.get_dashboard()
+        for value in ("600", "60.0%", "37.60%", "14 / 20", "87.5% legacy", "30.93% legacy"):
+            with self.subTest(value=value):
+                self.assertContains(response, value)
+        self.assertNotContains(response, "12,480")
+        self.assertNotContains(response, "৳384K")
 
 
 class ExperimentEvidenceTests(SimpleTestCase):
@@ -90,6 +98,18 @@ class ExperimentEvidenceTests(SimpleTestCase):
                 self.assertContains(response, f"<th scope=\"row\">{value}</th>", html=True)
         self.assertContains(response, 'id="experiment-chart-data"')
         self.assertContains(response, "canonical line remains below")
+
+    def test_exp03a_chart_payload_values_remain_unchanged(self):
+        chart = present_experiment_evidence()["chart"]
+        self.assertEqual(chart["labels"], ["0", "10", "25", "50", "100", "200"])
+        self.assertEqual(
+            chart["legacy"],
+            [574461.845, 576273.845, 578991.845, 583521.845, 592581.845, 610701.845],
+        )
+        self.assertEqual(
+            chart["canonical"],
+            [538578.315, 538779.115, 540160.315, 542462.315, 547066.315, 556274.315],
+        )
 
     def test_exp03b_distinguishes_per_profile_and_global_scope(self):
         response = self.get_page()
@@ -172,6 +192,9 @@ class DashboardOverviewTests(SimpleTestCase):
             with self.subTest(asset=asset):
                 self.assertContains(response, asset)
 
+    def test_recent_transactions_has_no_broken_view_all_action(self):
+        self.assertNotContains(self.get_dashboard(), "View all")
+
 
 class TransactionDetailTests(SimpleTestCase):
     def get_detail(self, transaction_id="TX-8420"):
@@ -196,7 +219,7 @@ class TransactionDetailTests(SimpleTestCase):
 
     def test_transaction_detail_links_to_evidence_and_network(self):
         response = self.get_detail()
-        self.assertContains(response, "How was this policy validated?")
+        self.assertContains(response, "View Validation Evidence")
         self.assertContains(response, "Inspect Recipient Network")
 
     def test_transaction_detail_uses_expected_template(self):
@@ -484,6 +507,17 @@ class NetworkIntelligenceTests(SimpleTestCase):
         self.assertContains(response, "HIGH_PASS_THROUGH")
         self.assertContains(response, "RAPID_CASHOUT")
 
+    def test_network_ratios_render_as_percentages(self):
+        response = self.get_network()
+        self.assertContains(response, "86%")
+        self.assertContains(response, "78%")
+
+    def test_concentrated_ratios_render_as_percentages(self):
+        response = self.get_network("concentrated")
+        presented = present_network("concentrated")
+        self.assertContains(response, presented["metric_display"]["pass_through_percent"])
+        self.assertContains(response, presented["metric_display"]["cashout_percent"])
+
     def test_concentrated_scenario_does_not_claim_safe(self):
         response = self.get_network("concentrated")
 
@@ -541,3 +575,5 @@ class NetworkIntelligenceTests(SimpleTestCase):
             response,
             reverse("dashboard:network_intelligence") + "?scenario=high-risk",
         )
+        self.assertContains(response, "View Validation Evidence")
+        self.assertContains(response, reverse("dashboard:experiment_evidence"))

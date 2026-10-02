@@ -13,41 +13,44 @@ from .presenters.transaction_detail import present_transaction_detail
 
 def overview(request):
     """Render the Phase 1 analyst dashboard with synthetic demo data."""
+    evidence = present_experiment_evidence()["reference"]
+    legacy = evidence["legacy"]
+    canonical = evidence["canonical"]
     context = {
         "metrics": (
             {
-                "label": "Transactions Analyzed",
-                "value": "12,480",
-                "supporting": "Across the prototype benchmark",
-                "trend": "+8.4%",
-                "trend_label": "vs. prior demo window",
+                "label": "Transactions Evaluated",
+                "value": f"{evidence['configuration']['count']:,}",
+                "supporting": "Validated reference configuration",
+                "trend": "Seed 42",
+                "trend_label": "review capacity 20",
                 "icon": "activity",
                 "tone": "blue",
             },
             {
-                "label": "Flagged / Review Queue",
-                "value": "42",
-                "supporting": "14 allocated of 20 capacity",
-                "trend": "70%",
-                "trend_label": "review capacity in use",
+                "label": "Context Probe Rate",
+                "value": f"{canonical['probe_rate']:.1%}",
+                "supporting": f"{legacy['probe_rate']:.1%} legacy",
+                "trend": "−27.5pp",
+                "trend_label": "selective acquisition",
                 "icon": "shield-alert",
                 "tone": "warning",
             },
             {
-                "label": "Simulated Protected Value",
-                "value": "৳384K",
-                "supporting": "Modeled synthetic benchmark value",
-                "trend": "+12.6%",
-                "trend_label": "vs. prior demo window",
+                "label": "Simulated Prevention",
+                "value": f"{canonical['prevention_rate']:.2%}",
+                "supporting": f"{legacy['prevention_rate']:.2%} legacy",
+                "trend": "+6.67pp",
+                "trend_label": "synthetic benchmark",
                 "icon": "spark",
                 "tone": "cyan",
             },
             {
-                "label": "Intervention Rate",
-                "value": "18.6%",
-                "supporting": "Across analyzed transactions",
-                "trend": "Selective",
-                "trend_label": "minimum-effective policy",
+                "label": "Human Review Capacity",
+                "value": f"{canonical['allocated_reviews']} / {evidence['configuration']['review_capacity']}",
+                "supporting": "Canonical allocations",
+                "trend": "70%",
+                "trend_label": "capacity in use",
                 "icon": "target",
                 "tone": "violet",
             },
